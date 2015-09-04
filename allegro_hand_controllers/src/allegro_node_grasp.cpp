@@ -21,6 +21,7 @@
 #include "ros/service_server.h"
 #include "sensor_msgs/JointState.h"
 #include "std_msgs/String.h"
+#include "std_msgs/Float32.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -34,6 +35,7 @@
 #define JOINT_STATE_TOPIC "/allegroHand/joint_states"
 #define JOINT_CMD_TOPIC "/allegroHand/joint_cmd"
 #define LIB_CMD_TOPIC "/allegroHand/lib_cmd"
+#define ENVELOP_TORQUE_TOPIC "/allegroHand/envelop_torque"
 
 double desired_position[DOF_JOINTS] 			= {0.0};
 double current_position[DOF_JOINTS] 			= {0.0};
@@ -68,6 +70,7 @@ boost::mutex *mutex;
 ros::Publisher joint_state_pub;
 ros::Subscriber joint_cmd_sub;
 ros::Subscriber lib_cmd_sub;
+ros::Subscriber envelop_torque_sub;
 sensor_msgs::JointState msgJoint;
 
 // ROS Time
@@ -94,6 +97,14 @@ void SetjointCallback(const sensor_msgs::JointState& msg)
 
   pBHand->SetJointDesiredPosition(desired_position);
   pBHand->SetMotionType(eMotionType_JOINT_PD);
+}
+
+// The grasp controller can set the desired envelop grasp torque by listening to
+// Float32 messages on ENVELOP_TORQUE_TOPIC ("/allegroHand/envelop_torque").
+void envelopTorqueCallback(const std_msgs::Float32& msg) {
+  const double torque = msg.data;
+  ROS_INFO("Setting envelop torque to %.3f.", torque);
+  pBHand->SetEnvelopTorqueScalar(torque);
 }
 
 // BHAND Communication
@@ -202,9 +213,9 @@ void publishData()
   msgJoint.header.stamp = tnow;
   for (int i=0; i<DOF_JOINTS; i++)
   {
-    msgJoint.position[i] 			= current_position_filtered[i];
-    msgJoint.velocity[i] 			= current_velocity_filtered[i];
-    msgJoint.effort[i] 				= desired_torque[i];
+    msgJoint.position[i] = current_position_filtered[i];
+    msgJoint.velocity[i] = current_velocity_filtered[i];
+    msgJoint.effort[i] = desired_torque[i];
   }
   joint_state_pub.publish(msgJoint);
 }
@@ -282,6 +293,7 @@ int main(int argc, char** argv)
   joint_state_pub = nh.advertise<sensor_msgs::JointState>(JOINT_STATE_TOPIC, 3);
   joint_cmd_sub = nh.subscribe(JOINT_CMD_TOPIC, 3, SetjointCallback);
   lib_cmd_sub = nh.subscribe(LIB_CMD_TOPIC, 1, libCmdCallback);
+  envelop_torque_sub = nh.subscribe(ENVELOP_TORQUE_TOPIC, 1, envelopTorqueCallback);
 
   // Create arrays 16 long for each of the four joint state components
   msgJoint.position.resize(DOF_JOINTS);
