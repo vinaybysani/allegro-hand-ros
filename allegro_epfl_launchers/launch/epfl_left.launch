@@ -1,0 +1,20 @@
+<launch>
+
+  <arg name="HAND" default="left" />
+  <arg name="NUM" default="1" />
+  <arg name="CONTROLLER" default="grasp" />
+  <arg name="RESPAWN" default="true" />
+  <arg name="VISUALIZE" default="true" />
+  <arg name="ZEROS" default="/home/felixd/proj/catkin-allegro-ros/src/allegro_hand_ros/allegro_hand_parameters/zero_files/zero_SAH020BL016.yaml" />
+
+
+  <include file="$(find allegro_hand_controllers)/launch/allegro_hand.launch">
+    <arg name="HAND" value="$(arg HAND)"/>
+    <arg name="NUM" value="$(arg NUM)"/>
+    <arg name="CONTROLLER" value="$(arg CONTROLLER)"/>
+    <arg name="RESPAWN" value="$(arg RESPAWN)"/>
+    <arg name="VISUALIZE" value="$(arg VISUALIZE)"/>
+    <arg name="ZEROS" value="$(arg ZEROS)"/>
+  </include>
+
+</launch>
