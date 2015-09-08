@@ -171,12 +171,11 @@ void computeDesiredTorque()
   {
     for(int i=0; i<DOF_JOINTS; i++)
     {
-      desired_torque[i] = k_p[i]*(desired_position[i]-current_position_filtered[i]) - k_d[i]*current_velocity_filtered[i];
+      desired_torque[i] = k_p[i]*(desired_position[i]-current_position_filtered[i])
+                          - k_d[i]*current_velocity_filtered[i];
       desired_torque[i] = desired_torque[i]/canDevice->torqueConversion();
     }
-  }
-  else
-  {
+  } else {
     for(int i=0; i<DOF_JOINTS; i++) desired_torque[i] = 0.0;
   }
 }
@@ -187,8 +186,7 @@ void initController(const std::string& whichHand)
   if (ros::param::has("~gains_pd"))
   {
     ROS_INFO("\n\nCTRL: PD gains loaded from param server.\n");
-    for(int i=0; i<DOF_JOINTS; i++)
-    {
+    for(int i=0; i<DOF_JOINTS; i++) {
       ros::param::get(pGainParams[i], k_p[i]);
       ros::param::get(dGainParams[i], k_d[i]);
       //printf("%f ", k_p[i]);
