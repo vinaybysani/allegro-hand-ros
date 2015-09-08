@@ -184,6 +184,7 @@ void AHKeyboard::keyLoop()
   std::cout << "\tGrasp (3 fingers):\t\t'G'" << std::endl;
   std::cout << "\tGrasp (4 fingers):\t\t'F'" << std::endl;
   std::cout << "\tGrasp (envelop):\t\t'E'" << std::endl;
+  std::cout << "\tGravity compensation:\t\t'Z'" << std::endl;
   std::cout << "\tMotors Off (free motion):\t'O'" << std::endl;
   std::cout << "\tSave Current Pose:\t\t'S'" << std::endl;
   std::cout << "\tPD Control (last saved):\t'Space'" << std::endl;
@@ -256,6 +257,11 @@ void AHKeyboard::keyLoop()
         ROS_DEBUG("e_key: Envelop");
         //cmd_ = 4;
         ss << "envelop";
+        dirty = true;
+        break;
+      case KEYCODE_z:
+        ROS_DEBUG("z_key: Gravcomp");
+        ss << "gravcomp";
         dirty = true;
         break;
       case KEYCODE_o:

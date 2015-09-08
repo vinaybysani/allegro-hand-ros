@@ -134,7 +134,12 @@ std::map<std::string, eMotionType> bhand_grasps = {
         {"pinch_it", eMotionType_PINCH_IT},
         {"pinch_mt", eMotionType_PINCH_MT},
         {"envelop", eMotionType_ENVELOP},
-        {"off", eMotionType_NONE}
+        {"off", eMotionType_NONE},
+        {"gravcomp", eMotionType_GRAVITY_COMP},
+        // These ones do not appear to do anything useful (or anything at all):
+        // {"pregrasp", eMotionType_PRE_SHAPE},  // not sure what this is supposed to do.
+        // {"move_object", eMotionType_OBJECT_MOVING},
+        // {"move_fingertip", eMotionType_FINGERTIP_MOVING}
 };
 
 void libCmdCallback(const std_msgs::String::ConstPtr& msg) {
