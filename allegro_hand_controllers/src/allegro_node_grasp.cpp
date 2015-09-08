@@ -124,28 +124,26 @@ void envelopTorqueCallback(const std_msgs::Float32& msg) {
   eMotionType_PRE_SHAPE,		//
 */
 
-
-
+// Define a map from string (received message) to eMotionType (Bhand controller grasp).
+std::map<std::string, eMotionType> bhand_grasps = {
+        {"home", eMotionType_HOME},
+        {"home", eMotionType_HOME},
+        {"ready", eMotionType_READY},
+        {"grasp_3", eMotionType_GRASP_3},
+        {"grasp_4", eMotionType_GRASP_4},
+        {"pinch_it", eMotionType_PINCH_IT},
+        {"pinch_mt", eMotionType_PINCH_MT},
+        {"envelop", eMotionType_ENVELOP},
+        {"off", eMotionType_NONE}
+};
 
 void libCmdCallback(const std_msgs::String::ConstPtr& msg) {
-  std::map<std::string, eMotionType> bhand_grasps;
-  bhand_grasps["home"] = eMotionType_HOME;
-  bhand_grasps["ready"] = eMotionType_READY;
-  bhand_grasps["grasp_3"] = eMotionType_GRASP_3;
-  bhand_grasps["grasp_4"] = eMotionType_GRASP_4;
-  bhand_grasps["pinch_it"] = eMotionType_PINCH_IT;
-  bhand_grasps["pinch_mt"] = eMotionType_PINCH_MT;
-  bhand_grasps["envelop"] = eMotionType_ENVELOP;
-  bhand_grasps["off"] = eMotionType_NONE;
-
   ROS_INFO("CTRL: Heard: [%s]", msg->data.c_str());
   const std::string lib_cmd = msg->data;
 
-  std::map<std::string, eMotionType>::iterator itr;
-  itr = bhand_grasps.find(msg->data);
-
   // Main behavior: apply the grasp directly from the map. Secondary behaviors can still be handled
-  // normally (case-by-case basis).
+  // normally (case-by-case basis), note these should *not* be in the map.
+  auto itr = bhand_grasps.find(msg->data);
   if(itr != bhand_grasps.end()) {
     pBHand->SetMotionType(itr->second);
   } else if (lib_cmd.compare("pdControl") == 0) {
