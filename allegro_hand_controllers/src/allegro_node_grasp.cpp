@@ -49,8 +49,6 @@ double current_velocity_filtered[DOF_JOINTS] 	= {0.0};
 
 double desired_torque[DOF_JOINTS] 				= {0.0};
 
-std::string  lib_cmd;
-
 std::string jointNames[DOF_JOINTS] 	=
 {
   "joint_0.0",    "joint_1.0",    "joint_2.0",   "joint_3.0" ,
@@ -125,43 +123,41 @@ void envelopTorqueCallback(const std_msgs::Float32& msg) {
   eMotionType_OBJECT_MOVING,	//
   eMotionType_PRE_SHAPE,		//
 */
-void libCmdCallback(const std_msgs::String::ConstPtr& msg)
-{
-  ROS_INFO("CTRL: Heard: [%s]", msg->data.c_str());
-  lib_cmd = msg->data.c_str();
 
-  if (lib_cmd.compare("pdControl") == 0)
-  {
+
+
+
+void libCmdCallback(const std_msgs::String::ConstPtr& msg) {
+  std::map<std::string, eMotionType> bhand_grasps;
+  bhand_grasps["home"] = eMotionType_HOME;
+  bhand_grasps["ready"] = eMotionType_READY;
+  bhand_grasps["grasp_3"] = eMotionType_GRASP_3;
+  bhand_grasps["grasp_4"] = eMotionType_GRASP_4;
+  bhand_grasps["pinch_it"] = eMotionType_PINCH_IT;
+  bhand_grasps["pinch_mt"] = eMotionType_PINCH_MT;
+  bhand_grasps["envelop"] = eMotionType_ENVELOP;
+  bhand_grasps["off"] = eMotionType_NONE;
+
+  ROS_INFO("CTRL: Heard: [%s]", msg->data.c_str());
+  const std::string lib_cmd = msg->data;
+
+  std::map<std::string, eMotionType>::iterator itr;
+  itr = bhand_grasps.find(msg->data);
+
+  // Main behavior: apply the grasp directly from the map. Secondary behaviors can still be handled
+  // normally (case-by-case basis).
+  if(itr != bhand_grasps.end()) {
+    pBHand->SetMotionType(itr->second);
+  } else if (lib_cmd.compare("pdControl") == 0) {
     // Desired position only necessary if in PD Control mode
     pBHand->SetJointDesiredPosition(desired_position);
     pBHand->SetMotionType(eMotionType_JOINT_PD);
+  } else if (lib_cmd.compare("save") == 0) {
+    for (int i = 0; i < DOF_JOINTS; i++)
+      desired_position[i] = current_position[i];
+  } else {
+    ROS_WARN("Unknown commanded grasp: %s.", lib_cmd.c_str());
   }
-  else if (lib_cmd.compare("home") == 0)
-    pBHand->SetMotionType(eMotionType_HOME);
-
-  else if (lib_cmd.compare("ready") == 0)
-    pBHand->SetMotionType(eMotionType_READY);
-
-  else if (lib_cmd.compare("grasp_3") == 0)
-    pBHand->SetMotionType(eMotionType_GRASP_3);
-
-  else if (lib_cmd.compare("grasp_4") == 0)
-    pBHand->SetMotionType(eMotionType_GRASP_4);
-
-  else if (lib_cmd.compare("pinch_it") == 0)
-    pBHand->SetMotionType(eMotionType_PINCH_IT);
-
-  else if (lib_cmd.compare("pinch_mt") == 0)
-    pBHand->SetMotionType(eMotionType_PINCH_MT);
-
-  else if (lib_cmd.compare("envelop") == 0)
-    pBHand->SetMotionType(eMotionType_ENVELOP);
-
-  else if (lib_cmd.compare("off") == 0)
-    pBHand->SetMotionType(eMotionType_NONE);
-
-  else if (lib_cmd.compare("save") == 0)
-    for (int i=0; i<DOF_JOINTS; i++) desired_position[i] = current_position[i];
 }
 
 void computeDesiredTorque()
