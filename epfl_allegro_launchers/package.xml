@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>allegro_epfl_launchers</name>
+  <name>epfl_allegro_launchers</name>
   <version>0.0.0</version>
   <description>Launch files with default settings for EPFL allegro
   hand.</description>
