@@ -102,11 +102,16 @@ using namespace std;
 #define KEYCODE_y	0x79
 #define KEYCODE_z	0x7A
 
+#define KEYCODE_slash 0x2F
+#define KEYCORD_question 0x3F
+
+
 class AHKeyboard
 {
  public:
   AHKeyboard();
   void keyLoop();
+  void printUsage();
 
  private:
 
@@ -154,24 +159,7 @@ int main(int argc, char** argv)
   return(0);
 }
 
-
-void AHKeyboard::keyLoop()
-{
-  char c;
-  bool dirty=false;
-  bool jointUpdate=false;
-
-
-  // get the console in raw mode
-  tcgetattr(kfd, &cooked);
-  memcpy(&raw, &cooked, sizeof(struct termios));
-  raw.c_lflag &=~ (ICANON | ECHO);
-  // Setting a new line, then end of file
-  raw.c_cc[VEOL] = 1;
-  raw.c_cc[VEOF] = 2;
-  tcsetattr(kfd, TCSANOW, &raw);
-
-  sleep(2);
+void AHKeyboard::printUsage() {
   std::cout << std::endl;
   std::cout << " -----------------------------------------------------------------------------" << std::endl;
   std::cout << "  Use the keyboard to send Allegro Hand grasp & motion commands" << std::endl;
@@ -193,6 +181,27 @@ void AHKeyboard::keyLoop()
   //std::cout << "  the 'allegro_hand_core_grasp' and 'allegro_hand_core_grasp_slp' packages." << std::endl;
   std::cout << "  Subscriber code for reading these messages is included in '~core_template'." << std::endl;
   std::cout << " -----------------------------------------------------------------------------\n" << std::endl;
+
+}
+
+void AHKeyboard::keyLoop()
+{
+  char c;
+  bool dirty=false;
+  bool jointUpdate=false;
+
+
+  // get the console in raw mode
+  tcgetattr(kfd, &cooked);
+  memcpy(&raw, &cooked, sizeof(struct termios));
+  raw.c_lflag &=~ (ICANON | ECHO);
+  // Setting a new line, then end of file
+  raw.c_cc[VEOL] = 1;
+  raw.c_cc[VEOF] = 2;
+  tcsetattr(kfd, TCSANOW, &raw);
+
+  sleep(2);
+  printUsage();
 
   for(;;)
   {
@@ -275,6 +284,10 @@ void AHKeyboard::keyLoop()
         //cmd_ = 4;
         ss << "save";
         dirty = true;
+        break;
+      case KEYCODE_slash:
+      case KEYCORD_question:
+        printUsage();
         break;
     }
 
