@@ -176,6 +176,7 @@ void AHKeyboard::printUsage() {
   std::cout << "\tMotors Off (free motion):\t'O'" << std::endl;
   std::cout << "\tSave Current Pose:\t\t'S'" << std::endl;
   std::cout << "\tPD Control (last saved):\t'Space'" << std::endl;
+  std::cout << "\tHelp (this message):\t\t'/ or ?'" << std::endl;
   std::cout << " -----------------------------------------------------------------------------" << std::endl;
   //std::cout << "  Note: Unless elsewhere implemented, these keyboard commands only work with " << std::endl;
   //std::cout << "  the 'allegro_hand_core_grasp' and 'allegro_hand_core_grasp_slp' packages." << std::endl;
