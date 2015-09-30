@@ -37,25 +37,25 @@
 #define LIB_CMD_TOPIC "/allegroHand/lib_cmd"
 #define ENVELOP_TORQUE_TOPIC "/allegroHand/envelop_torque"
 
-double desired_position[DOF_JOINTS] 			= {0.0};
-double current_position[DOF_JOINTS] 			= {0.0};
-double previous_position[DOF_JOINTS] 			= {0.0};
-double current_position_filtered[DOF_JOINTS] 	= {0.0};
-double previous_position_filtered[DOF_JOINTS]	= {0.0};
+double desired_position[DOF_JOINTS] = {0.0};
+double current_position[DOF_JOINTS] = {0.0};
+double previous_position[DOF_JOINTS] = {0.0};
+double current_position_filtered[DOF_JOINTS] = {0.0};
+double previous_position_filtered[DOF_JOINTS] = {0.0};
 
-double current_velocity[DOF_JOINTS] 			= {0.0};
-double previous_velocity[DOF_JOINTS] 			= {0.0};
-double current_velocity_filtered[DOF_JOINTS] 	= {0.0};
+double current_velocity[DOF_JOINTS] = {0.0};
+double previous_velocity[DOF_JOINTS] = {0.0};
+double current_velocity_filtered[DOF_JOINTS] = {0.0};
 
-double desired_torque[DOF_JOINTS] 				= {0.0};
+double desired_torque[DOF_JOINTS] = {0.0};
 
-std::string jointNames[DOF_JOINTS] 	=
-{
-  "joint_0.0",    "joint_1.0",    "joint_2.0",   "joint_3.0" ,
-  "joint_4.0",    "joint_5.0",    "joint_6.0",   "joint_7.0" ,
-  "joint_8.0",    "joint_9.0",    "joint_10.0",  "joint_11.0",
-  "joint_12.0",   "joint_13.0",   "joint_14.0",  "joint_15.0"
-};
+std::string jointNames[DOF_JOINTS] =
+        {
+                "joint_0.0", "joint_1.0", "joint_2.0", "joint_3.0",
+                "joint_4.0", "joint_5.0", "joint_6.0", "joint_7.0",
+                "joint_8.0", "joint_9.0", "joint_10.0", "joint_11.0",
+                "joint_12.0", "joint_13.0", "joint_14.0", "joint_15.0"
+        };
 
 long frame = 0;
 
@@ -77,20 +77,19 @@ ros::Time tnow;
 double dt;
 
 // Initialize BHand
-BHand* pBHand = NULL;
+BHand *pBHand = NULL;
 
 // Initialize CAN device
-controlAllegroHand* canDevice;
+controlAllegroHand *canDevice;
 
 // Called when a desired joint position message is received
-void SetjointCallback(const sensor_msgs::JointState& msg)
-{
+void SetjointCallback(const sensor_msgs::JointState &msg) {
   //	printf("frame = %ld: setting desired pos\n", frame);
 
   // TODO check joint limits
 
   mutex->lock();
-  for (int i=0; i<DOF_JOINTS; i++) desired_position[i] = msg.position[i];
+  for (int i = 0; i < DOF_JOINTS; i++) desired_position[i] = msg.position[i];
   mutex->unlock();
 
   pBHand->SetJointDesiredPosition(desired_position);
@@ -99,7 +98,7 @@ void SetjointCallback(const sensor_msgs::JointState& msg)
 
 // The grasp controller can set the desired envelop grasp torque by listening to
 // Float32 messages on ENVELOP_TORQUE_TOPIC ("/allegroHand/envelop_torque").
-void envelopTorqueCallback(const std_msgs::Float32& msg) {
+void envelopTorqueCallback(const std_msgs::Float32 &msg) {
   const double torque = msg.data;
   ROS_INFO("Setting envelop torque to %.3f.", torque);
   pBHand->SetEnvelopTorqueScalar(torque);
@@ -126,15 +125,15 @@ void envelopTorqueCallback(const std_msgs::Float32& msg) {
 
 // Define a map from string (received message) to eMotionType (Bhand controller grasp).
 std::map<std::string, eMotionType> bhand_grasps = {
-        {"home", eMotionType_HOME},
-        {"home", eMotionType_HOME},
-        {"ready", eMotionType_READY},
-        {"grasp_3", eMotionType_GRASP_3},
-        {"grasp_4", eMotionType_GRASP_4},
+        {"home",     eMotionType_HOME},
+        {"home",     eMotionType_HOME},
+        {"ready",    eMotionType_READY},
+        {"grasp_3",  eMotionType_GRASP_3},
+        {"grasp_4",  eMotionType_GRASP_4},
         {"pinch_it", eMotionType_PINCH_IT},
         {"pinch_mt", eMotionType_PINCH_MT},
-        {"envelop", eMotionType_ENVELOP},
-        {"off", eMotionType_NONE},
+        {"envelop",  eMotionType_ENVELOP},
+        {"off",      eMotionType_NONE},
         {"gravcomp", eMotionType_GRAVITY_COMP},
         // These ones do not appear to do anything useful (or anything at all):
         // {"pregrasp", eMotionType_PRE_SHAPE},  // not sure what this is supposed to do.
@@ -142,14 +141,14 @@ std::map<std::string, eMotionType> bhand_grasps = {
         // {"move_fingertip", eMotionType_FINGERTIP_MOVING}
 };
 
-void libCmdCallback(const std_msgs::String::ConstPtr& msg) {
+void libCmdCallback(const std_msgs::String::ConstPtr &msg) {
   ROS_INFO("CTRL: Heard: [%s]", msg->data.c_str());
   const std::string lib_cmd = msg->data;
 
   // Main behavior: apply the grasp directly from the map. Secondary behaviors can still be handled
   // normally (case-by-case basis), note these should *not* be in the map.
   auto itr = bhand_grasps.find(msg->data);
-  if(itr != bhand_grasps.end()) {
+  if (itr != bhand_grasps.end()) {
     pBHand->SetMotionType(itr->second);
   } else if (lib_cmd.compare("pdControl") == 0) {
     // Desired position only necessary if in PD Control mode
@@ -163,28 +162,24 @@ void libCmdCallback(const std_msgs::String::ConstPtr& msg) {
   }
 }
 
-void computeDesiredTorque()
-{
+void computeDesiredTorque() {
   // compute control torque using Bhand library
   pBHand->SetJointPosition(current_position_filtered);
 
   // BHand lib control updated with time stamp
-  pBHand->UpdateControl((double)frame*ALLEGRO_CONTROL_TIME_INTERVAL);
+  pBHand->UpdateControl((double) frame * ALLEGRO_CONTROL_TIME_INTERVAL);
 
   // Necessary torque obtained from Bhand lib
   pBHand->GetJointTorque(desired_torque);
 }
 
-void initController(const std::string& whichHand)
-{
+void initController(const std::string &whichHand) {
   // Initialize BHand controller
-  if (whichHand.compare("left") == 0)
-  {
+  if (whichHand.compare("left") == 0) {
     pBHand = new BHand(eHandType_Left);
     ROS_WARN("CTRL: Left Allegro Hand controller initialized.");
   }
-  else
-  {
+  else {
     pBHand = new BHand(eHandType_Right);
     ROS_WARN("CTRL: Right Allegro Hand controller initialized.");
   }
@@ -192,7 +187,7 @@ void initController(const std::string& whichHand)
   pBHand->SetMotionType(eMotionType_NONE);
 
   // sets initial desired pos at start pos for PD control
-  for (int i=0; i<DOF_JOINTS; i++) desired_position[i] = current_position[i];
+  for (int i = 0; i < DOF_JOINTS; i++) desired_position[i] = current_position[i];
 
   printf("*************************************\n");
   printf("         Grasp (BHand) Method        \n");
@@ -201,17 +196,14 @@ void initController(const std::string& whichHand)
   printf("*************************************\n");
 }
 
-void cleanController()
-{
+void cleanController() {
   delete pBHand;
 }
 
-void publishData()
-{
+void publishData() {
   // current position, velocity and effort (torque) published
   msgJoint.header.stamp = tnow;
-  for (int i=0; i<DOF_JOINTS; i++)
-  {
+  for (int i = 0; i < DOF_JOINTS; i++) {
     msgJoint.position[i] = current_position_filtered[i];
     msgJoint.velocity[i] = current_velocity_filtered[i];
     msgJoint.effort[i] = desired_torque[i];
@@ -219,8 +211,7 @@ void publishData()
   joint_state_pub.publish(msgJoint);
 }
 
-void updateWriteReadCAN()
-{
+void updateWriteReadCAN() {
   /* ==================================
      =        CAN COMMUNICATION         =
      ================================== */
@@ -228,24 +219,21 @@ void updateWriteReadCAN()
   lEmergencyStop = canDevice->Update();
   canDevice->getJointInfo(current_position);
 
-  if (lEmergencyStop < 0)
-  {
+  if (lEmergencyStop < 0) {
     // Stop program when Allegro Hand is switched off
     ROS_ERROR("Allegro Hand Node is Shutting Down! (Emergency Stop)");
     ros::shutdown();
   }
 }
 
-void updateController()
-{
+void updateController() {
   // Calculate loop time;
   tnow = ros::Time::now();
-  dt = 1e-9*(tnow - tstart).nsec;
+  dt = 1e-9 * (tnow - tstart).nsec;
   tstart = tnow;
 
   // save last iteration info
-  for (int i=0; i<DOF_JOINTS; i++)
-  {
+  for (int i = 0; i < DOF_JOINTS; i++) {
     previous_position[i] = current_position[i];
     previous_position_filtered[i] = current_position_filtered[i];
     previous_velocity[i] = current_velocity[i];
@@ -256,11 +244,14 @@ void updateController()
   /* ==================================
      =         LOWPASS FILTERING        =
      ================================== */
-  for (int i=0; i<DOF_JOINTS; i++)
-  {
-    current_position_filtered[i] = (0.6*current_position_filtered[i]) + (0.198*previous_position[i]) + (0.198*current_position[i]);
+  for (int i = 0; i < DOF_JOINTS; i++) {
+    current_position_filtered[i] =
+            (0.6 * current_position_filtered[i]) + (0.198 * previous_position[i]) +
+            (0.198 * current_position[i]);
     current_velocity[i] = (current_position_filtered[i] - previous_position_filtered[i]) / dt;
-    current_velocity_filtered[i] = (0.6*current_velocity_filtered[i]) + (0.198*previous_velocity[i]) + (0.198*current_velocity[i]);
+    current_velocity_filtered[i] =
+            (0.6 * current_velocity_filtered[i]) + (0.198 * previous_velocity[i]) +
+            (0.198 * current_velocity[i]);
     current_velocity[i] = (current_position[i] - previous_position[i]) / dt;
   }
 
@@ -272,13 +263,11 @@ void updateController()
 }
 
 // In case of the Allegro Hand, this callback is processed every 0.003 seconds
-void timerCallback(const ros::TimerEvent& event)
-{
+void timerCallback(const ros::TimerEvent &event) {
   updateController();
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   using namespace std;
 
   ros::init(argc, argv, "allegro_hand_core_grasp");
@@ -301,21 +290,22 @@ int main(int argc, char** argv)
   msgJoint.name.resize(DOF_JOINTS);
 
   // Joint names (for use with joint_state_publisher GUI - matches URDF)
-  for (int i=0; i<DOF_JOINTS; i++)	msgJoint.name[i] = jointNames[i];
+  for (int i = 0; i < DOF_JOINTS; i++) msgJoint.name[i] = jointNames[i];
 
   // Get Allegro Hand information from parameter server
   // This information is found in the Hand-specific "zero.yaml" file from the allegro_hand_description package
   string robot_name, whichHand, manufacturer, origin, serial;
   double version;
-  ros::param::get("~hand_info/robot_name",robot_name);
-  ros::param::get("~hand_info/which_hand",whichHand);
-  ros::param::get("~hand_info/manufacturer",manufacturer);
-  ros::param::get("~hand_info/origin",origin);
-  ros::param::get("~hand_info/serial",serial);
-  ros::param::get("~hand_info/version",version);
+  ros::param::get("~hand_info/robot_name", robot_name);
+  ros::param::get("~hand_info/which_hand", whichHand);
+  ros::param::get("~hand_info/manufacturer", manufacturer);
+  ros::param::get("~hand_info/origin", origin);
+  ros::param::get("~hand_info/serial", serial);
+  ros::param::get("~hand_info/version", version);
 
   // Dump Allegro Hand information to the terminal
-  cout << endl << endl << robot_name << " v" << version << endl << serial << " (" << whichHand << ")" << endl << manufacturer << endl << origin << endl << endl;
+  cout << endl << endl << robot_name << " v" << version << endl << serial << " (" << whichHand <<
+  ")" << endl << manufacturer << endl << origin << endl << endl;
 
   // Initialize CAN device
   canDevice = new controlAllegroHand();
@@ -323,7 +313,7 @@ int main(int argc, char** argv)
   usleep(3000);
 
   // Initialize torque at zero
-  for (int i=0; i<DOF_JOINTS; i++) desired_torque[i] = current_velocity[i] = 0.0;
+  for (int i = 0; i < DOF_JOINTS; i++) desired_torque[i] = current_velocity[i] = 0.0;
 
   // Initialize current pos to Hand pos
   updateWriteReadCAN();
@@ -338,14 +328,12 @@ int main(int argc, char** argv)
 
   if (argv[1] == std::string("true")) //polling:=true
   {
-    while (ros::ok())
-    {
+    while (ros::ok()) {
       updateController();
       ros::spinOnce();
     }
   }
-  else
-  {
+  else {
     // Setup timer callback
     ros::Timer timer = nh.createTimer(ros::Duration(0.001), timerCallback); //KCX
     ros::spin();
