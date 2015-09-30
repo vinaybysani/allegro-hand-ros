@@ -199,16 +199,19 @@ void controlAllegroHand::init(int mode) {
     }
     else {
       itr++;
+      ROS_WARN("Problem communicating over CAN.");
     }
 
     if (itr > 4) {
       mEmergencyStop = true;
+      ROS_ERROR("Emergency stop during init().");
       break;
     }
   }
 
-  //cout << "started" << endl;
-  ROS_INFO("CAN: Communicating");
+  if (!mEmergencyStop) {
+    ROS_INFO("CAN: Communicating");
+  }
 }
 
 //KCX
@@ -217,14 +220,12 @@ int controlAllegroHand::Update(void) {
   int itr = 0;
   while (itr < 4) {
     itr += readDevices();
+    if (mEmergencyStop) {
+      ROS_ERROR("Emergency stop in Update()");
+      return -1;
+    }
   }
-
-  if (mEmergencyStop == true) {
-    return -1;
-  }
-  else {
-    return 0;
-  }
+  return 0;
 }
 
 int controlAllegroHand::update(void) {
@@ -232,7 +233,8 @@ int controlAllegroHand::update(void) {
   usleep(10);
   _writeDevices();
 
-  if (mEmergencyStop == true) {
+  if (mEmergencyStop) {
+    ROS_ERROR("Emergency stop in update()");
     return -1;
   }
   else {
