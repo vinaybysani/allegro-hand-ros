@@ -17,22 +17,19 @@
 
 using namespace std;
 
-void PRINT_INFO(const char *msg)
-{
-  cout << msg << endl;
-}
-
 controlAllegroHand::controlAllegroHand()
 {
 
   if (ros::param::has("~zero"))
   {
     mEmergencyStop = false;
-    ROS_INFO("\n\nCAN: Joint zeros and directions loaded from parameter server.\n");
+    ROS_INFO("CAN: Joint zeros and directions loaded from parameter server.");
   }
   else
   {
-    ROS_ERROR("\n\nEncoder/Motor offsets and directions not loaded.\nCheck launch file is loading /parameters/zero.yaml\nShutting down...\n");
+    ROS_ERROR("Encoder/Motor offsets and directions not loaded.");
+    ROS_ERROR("Check launch file is loading /parameters/zero.yaml.");
+    ROS_ERROR("Shutting down...");
     mEmergencyStop = true;
   }
 
@@ -45,7 +42,7 @@ controlAllegroHand::controlAllegroHand()
     tau_cov_const = 1200.0;
   else
     tau_cov_const = 800.0;
-  ROS_INFO("Hand Version: %2.1f\n", hand_version);
+  ROS_INFO("Hand Version: %2.1f", hand_version);
 
   mPWM_MAX[eJOINTNAME_INDEX_0] = PWM_LIMIT_ROLL;
   mPWM_MAX[eJOINTNAME_INDEX_1] = PWM_LIMIT_NEAR;
@@ -121,14 +118,12 @@ controlAllegroHand::controlAllegroHand()
 
 controlAllegroHand::~controlAllegroHand()
 {
-  //PRINT_INFO("Setting System OFF");
   ROS_INFO("Setting System OFF");
   _writeDeviceMsg(ID_CMD_SET_SYSTEM_OFF, ID_DEVICE_MAIN, ID_COMMON);
   usleep(10000);
 
   if(CAN_Close(CanHandle))
   {
-    //PRINT_INFO("Error in CAN_Close()");
     ROS_ERROR("Error in CAN_Close()");
   }
 }
@@ -139,7 +134,6 @@ void controlAllegroHand::init(int mode)
   int ret;
   TPCANRdMsg lmsg;
 
-  //PRINT_INFO("Opening CAN device");
   ROS_INFO("CAN: Opening device");
 
   string CAN_CH;
@@ -149,76 +143,61 @@ void controlAllegroHand::init(int mode)
   //ROS_WARN("[arm] Failed to find %s segment in the KDL chain with a tip at %s.", name.c_str(), chain_tip_name_.c_str());
 
   CanHandle = LINUX_CAN_Open(CAN_CH_c, O_RDWR);
-  if (!CanHandle)
-  {
-    //PRINT_INFO("Error in CAN_Open()");
+  if (!CanHandle) {
     ROS_ERROR("CAN: Error in CAN_Open() on Channel %s", CAN_CH_c );
-  }
-  else
-  {
-    ROS_WARN("CAN: Success Opening Channel %s", CAN_CH_c );
+  } else {
+    ROS_INFO("CAN: Success Opening Channel %s", CAN_CH_c );
   }
 
   char txt[VERSIONSTRING_LEN];
   ret = CAN_VersionInfo(CanHandle, txt);
   if (!ret)
   {
-    //PRINT_INFO(txt);
     ROS_INFO("CAN: %s", txt);
   }
   else
   {
-    //PRINT_INFO("Error getting CAN_VersionInfo()");
     ROS_ERROR("CAN: Error in CAN_VersionInfo()");
   }
 
-  //PRINT_INFO("Initializing CAN device");
   ROS_INFO("CAN: Initializing device");
   // init to an user defined bit rate
   ret = CAN_Init(CanHandle, CAN_BAUD_1M, CAN_INIT_TYPE_ST);
   if (ret)
   {
-    //PRINT_INFO("Error in CAN_Init()");
     ROS_ERROR("CAN: Error in CAN_Init()");
   }
 
-  //PRINT_INFO("Clear the can buffer");
   ROS_INFO("CAN: Clearing the CAN buffer");
   for(int i=0; i<100; i++){
     LINUX_CAN_Read_Timeout(CanHandle, &lmsg, 1000); // polding
   }
 
-  //PRINT_INFO("System off");
   ROS_INFO("CAN: System off");
   _writeDeviceMsg(ID_CMD_SET_SYSTEM_OFF, ID_DEVICE_MAIN, ID_COMMON);
   usleep(100);
 
-  //PRINT_INFO("Setting loop period = 3 ms");
   ROS_INFO("CAN: Setting loop period = 3 ms");
   //data[0] = (char)(ALLEGRO_CONTROL_TIME_INTERVAL * 1000.);
   data[0] = 3;
   _writeDeviceMsg(ID_CMD_SET_PERIOD, ID_DEVICE_MAIN, ID_COMMON, 1, data );
   usleep(100);
 
-  //PRINT_INFO("Setting task mode");
   ROS_INFO("CAN: Setting task mode");
   _writeDeviceMsg(ID_CMD_SET_MODE_TASK, ID_DEVICE_MAIN, ID_COMMON);
   usleep(100);
 
-  //PRINT_INFO("Setting System ON");
   ROS_INFO("CAN: Setting System ON");
   _writeDeviceMsg(ID_CMD_SET_SYSTEM_ON, ID_DEVICE_MAIN, ID_COMMON);
   usleep(100);
 
   for(int i=0; i<100; i++) ret=LINUX_CAN_Read_Timeout(CanHandle, &lmsg, 0);
 
-  //PRINT_INFO("Setting joint query command");
   ROS_INFO("CAN: Setting joint query command");
   _writeDeviceMsg(ID_CMD_QUERY_STATE_DATA, ID_DEVICE_MAIN, ID_COMMON);
   usleep(100);
 
   // wait for the first command
-  //PRINT_INFO("Wait for first joint command");
   int cnt = 0;
   int itr = 0;
   double q[4];
