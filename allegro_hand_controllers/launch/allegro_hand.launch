@@ -76,6 +76,8 @@
     <remap from="/allegroHand/joint_cmd" to="/allegroHand_$(arg NUM)/joint_cmd"/>
     <remap from="/allegroHand/lib_cmd" to="/allegroHand_$(arg NUM)/lib_cmd"/>
     <remap from="/allegroHand/envelop_torque" to="/allegroHand_$(arg NUM)/envelop_torque"/>
+    <remap from="/allegroHand/joint_current_states" to="/allegroHand_$(arg NUM)/joint_current_states"/>
+    <remap from="/allegroHand/joint_desired_states" to="/allegroHand_$(arg NUM)/joint_desired_states"/>
 
     <!--parameters are within the scope of the hand node so that multiple hands can be run at the same time -->
     <rosparam file="$(arg ZEROS)" command="load" />
