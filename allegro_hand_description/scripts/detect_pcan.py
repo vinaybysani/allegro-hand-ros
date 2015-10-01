@@ -22,7 +22,7 @@ def pcan_search():
     valid_files = [x for x in gen]
 
     if len(valid_files) == 1:
-        print valid_files[0]
+        print(valid_files[0])
         return valid_files[0]
     else:
         return ''
