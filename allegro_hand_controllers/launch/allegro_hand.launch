@@ -7,6 +7,7 @@
           CONTROLLER:=grasp|pd|velsat
           RESPAWN:=true|false   Respawn controller if it dies.
           KEYBOARD:=true|false  (default is true)
+          AUTO_CAN:=true|false  (if true, ignores CAN_DEVICE argument and finds the can device automagically).
           CAN_DEVICE:=/dev/pcanusb1 | /dev/pcanusbNNN  (ls -l /dev/pcan* to see open CAN devices)
           VISUALIZE:=true|false  (Launch rviz)
 
@@ -14,6 +15,9 @@
          - allegro hand controller (different controllers exist)
          - keyboard controller
          - state publisher (for TF information)
+
+       NOTE: If you specify the can device manually (CAN_DEVICE:=/dev/pcanusbN),
+             make sure you *also* specify AUTO_CAN:=false.
 
   -->
 
@@ -41,8 +45,10 @@
   <arg name="HAND"/>
   <arg name="NUM" default='0'/>
 
-  <!-- ls -l /dev/pcan* to see your open CAN ports -->
-  <arg name="CAN_DEVICE" default="/dev/pcanusb1"/>
+  <!-- ls -l /dev/pcan* to see your open CAN ports. Auto means find it
+       automatically, and ignores the CAN_DEVICE argument. -->
+  <arg name="AUTO_CAN" default="true" />
+  <arg name="CAN_DEVICE" default="/dev/pcanusb1" />
 
   <arg name="PARAMS_DIR" default="$(find allegro_hand_parameters)" />
   <arg name="KEYBOARD" default="true" />
@@ -86,7 +92,16 @@
     <rosparam file="$(arg PARAMS_DIR)/gains_velSat.yaml" command="load" />
     <rosparam file="$(arg PARAMS_DIR)/initial_position.yaml" command="load" />
 
-    <param name="/comm/CAN_CH" value="$(arg CAN_DEVICE)" />
+    <!-- Set the CAN channel automatically (using detect_pcan.py) if the
+         AUTO_CAN parameter is true, otherwise use the CAN_DEVICE
+         argument. NOTE: To manually set the can device, you must *also* set
+         AUTO_CAN:=false. -->
+    <param name="/comm/CAN_CH" value="$(arg CAN_DEVICE)"
+           unless="$(arg AUTO_CAN)" />
+    <param name="/comm/CAN_CH"
+           command="$(find allegro_hand_description)/scripts/detect_pcan.py"
+           if="$(arg AUTO_CAN)" />
+
     <param name="/hand_info/which_hand" value="$(arg HAND)" /> <!-- See HAND arg above -->
   </node>
 
