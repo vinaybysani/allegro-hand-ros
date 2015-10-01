@@ -123,16 +123,26 @@ controlAllegroHand::~controlAllegroHand() {
   }
 }
 
+// trim from end. see http://stackoverflow.com/a/217605/256798
+static inline std::string &rtrim(std::string &s) {
+  s.erase(std::find_if(
+      s.rbegin(), s.rend(),
+      std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+  return s;
+}
+
 void controlAllegroHand::init(int mode) {
   unsigned char data[8];
   int ret;
   TPCANRdMsg lmsg;
 
-  ROS_INFO("CAN: Opening device");
-
   string CAN_CH;
   ros::param::get("~comm/CAN_CH", CAN_CH);
+  rtrim(CAN_CH);  // Ensure the ROS parameter has no trailing whitespace.
+
   const char *CAN_CH_c = CAN_CH.c_str();
+
+  ROS_INFO("CAN: Opening device on channel [%s]", CAN_CH_c);
 
   CanHandle = LINUX_CAN_Open(CAN_CH_c, O_RDWR);
   if (!CanHandle) {
