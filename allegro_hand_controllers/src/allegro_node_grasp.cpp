@@ -1,16 +1,3 @@
-/*
- * allegroNode.cpp
- *
- *  Created on: Nov 14, 2012
- *  Authors: Alex ALSPACH, Seungsu KIM
- */
-
-// 20141210: kcchang: changed Duration to accomodate the hand's own CAN rate
-// 20141211: kcchang: merged callback and polling
-
-// GRASP LIBRARY INTERFACE
-// Using  timer callback
-
 #include "allegro_node_grasp.h"
 
 #include "BHand/BHand.h"
@@ -20,26 +7,6 @@
 const std::string JOINT_CMD_TOPIC = "/allegroHand/joint_cmd";
 const std::string LIB_CMD_TOPIC = "/allegroHand/lib_cmd";
 const std::string ENVELOP_TORQUE_TOPIC = "/allegroHand/envelop_torque";
-
-// Called when a desired joint position message is received
-void AllegroNodeGrasp::setJointCallback(const sensor_msgs::JointState &msg) {
-  mutex->lock();
-
-  for (int i = 0; i < DOF_JOINTS; i++)
-    desired_position[i] = msg.position[i];
-  mutex->unlock();
-
-  pBHand->SetJointDesiredPosition(desired_position);
-  pBHand->SetMotionType(eMotionType_JOINT_PD);
-}
-
-// The grasp controller can set the desired envelop grasp torque by listening to
-// Float32 messages on ENVELOP_TORQUE_TOPIC ("/allegroHand/envelop_torque").
-void AllegroNodeGrasp::envelopTorqueCallback(const std_msgs::Float32 &msg) {
-  const double torque = msg.data;
-  ROS_INFO("Setting envelop torque to %.3f.", torque);
-  pBHand->SetEnvelopTorqueScalar(torque);
-}
 
 // Define a map from string (received message) to eMotionType (Bhand controller grasp).
 std::map<std::string, eMotionType> bhand_grasps = {
@@ -77,6 +44,26 @@ void AllegroNodeGrasp::libCmdCallback(const std_msgs::String::ConstPtr &msg) {
   } else {
     ROS_WARN("Unknown commanded grasp: %s.", lib_cmd.c_str());
   }
+}
+
+// Called when a desired joint position message is received
+void AllegroNodeGrasp::setJointCallback(const sensor_msgs::JointState &msg) {
+  mutex->lock();
+
+  for (int i = 0; i < DOF_JOINTS; i++)
+    desired_position[i] = msg.position[i];
+  mutex->unlock();
+
+  pBHand->SetJointDesiredPosition(desired_position);
+  pBHand->SetMotionType(eMotionType_JOINT_PD);
+}
+
+// The grasp controller can set the desired envelop grasp torque by listening to
+// Float32 messages on ENVELOP_TORQUE_TOPIC ("/allegroHand/envelop_torque").
+void AllegroNodeGrasp::envelopTorqueCallback(const std_msgs::Float32 &msg) {
+  const double torque = msg.data;
+  ROS_INFO("Setting envelop torque to %.3f.", torque);
+  pBHand->SetEnvelopTorqueScalar(torque);
 }
 
 void AllegroNodeGrasp::computeDesiredTorque() {

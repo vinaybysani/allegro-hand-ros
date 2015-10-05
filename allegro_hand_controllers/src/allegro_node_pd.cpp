@@ -1,16 +1,3 @@
-/*
- * allegroNode.cpp
- *
- *  Created on: Feb 1, 2013
- *  Authors: Alex ALSPACH, Seungsu KIM
- */
-
-// 20141210: kcchang: changed Duration to accomodate the hand's own CAN rate
-// 20141211: kcchang: merged callback and polling
-
-// JOINT SPACE POSITION CONTROL
-// Using  timer callback
-
 using namespace std;
 
 
@@ -206,7 +193,7 @@ void AllegroNodePD::doIt(bool polling) {
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "allegro_hand_core_grasp");
+  ros::init(argc, argv, "allegro_hand_core_pd");
   AllegroNodePD allegroNodePD;
 
   bool polling = false;
