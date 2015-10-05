@@ -5,6 +5,7 @@
 #ifndef PROJECT_ALLEGRO_NODE_COMMON_H
 #define PROJECT_ALLEGRO_NODE_COMMON_H
 
+// Defines DOF_JOINTS.
 #include "allegro_hand_common/allegroCANProtocol.h"
 
 #include <string>
@@ -44,8 +45,6 @@ class AllegroNode {
     void timerCallback(const ros::TimerEvent &event);
 
  protected:
-
-
     // Variables
     double current_position[DOF_JOINTS] = {0.0};
     double previous_position[DOF_JOINTS] = {0.0};
@@ -60,7 +59,7 @@ class AllegroNode {
     double desired_position[DOF_JOINTS] = {0.0};
     double desired_torque[DOF_JOINTS] = {0.0};
 
-    std::string whichHand;
+    std::string whichHand;  // Right or left hand.
 
     // ROS stuff
     ros::NodeHandle nh;
@@ -83,9 +82,6 @@ class AllegroNode {
     // Flags
     int lEmergencyStop = 0;
     long frame = 0;
-
-
 };
-
 
 #endif //PROJECT_ALLEGRO_NODE_COMMON_H

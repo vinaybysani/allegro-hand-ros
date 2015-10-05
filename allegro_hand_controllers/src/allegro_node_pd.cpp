@@ -82,18 +82,16 @@ std::string initialPosition[DOF_JOINTS] =
                 "~initial_position/j33"
         };
 
-// Constructor
+// Constructor: subscribe to topics.
 AllegroNodePD::AllegroNodePD()
-        : AllegroNode() {
+        : AllegroNode() {  // Call super constructor.
 
   initController(whichHand);
 
-  // Publisher and Subscribers.
   joint_cmd_sub = nh.subscribe(
           JOINT_CMD_TOPIC, 3, &AllegroNodePD::setJointCallback, this);
   lib_cmd_sub =  nh.subscribe(
           LIB_CMD_TOPIC, 1, &AllegroNodePD::libCmdCallback, this);
-
 }
 
 AllegroNodePD::~AllegroNodePD() {
@@ -136,8 +134,7 @@ void AllegroNodePD::libCmdCallback(const std_msgs::String::ConstPtr &msg) {
 
 void AllegroNodePD::computeDesiredTorque() {
   // Position PD control for the desired joint configurations.
-  ROS_DEBUG("Compute desired torque -- PD: %d", controlPD);
-  if (controlPD) {
+    if (controlPD) {
     for (int i = 0; i < DOF_JOINTS; i++) {
       desired_torque[i] = k_p[i] * (desired_position[i] - current_position_filtered[i])
                           - k_d[i] * current_velocity_filtered[i];
@@ -150,7 +147,7 @@ void AllegroNodePD::computeDesiredTorque() {
 }
 
 void AllegroNodePD::initController(const std::string &whichHand) {
-  // set gains_pd via gains_pd.yaml or to defaul values
+  // set gains_pd via gains_pd.yaml or to default values
   if (ros::param::has("~gains_pd")) {
     ROS_INFO("CTRL: PD gains loaded from param server.");
     for (int i = 0; i < DOF_JOINTS; i++) {
