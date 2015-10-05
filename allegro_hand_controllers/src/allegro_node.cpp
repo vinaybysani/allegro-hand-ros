@@ -1,6 +1,7 @@
+// Common allegro node code used by any node. Each node that implements an
+// AllegroNode must define the computeDesiredTorque() method.
 //
-// Created by felixd on 10/1/15.
-//
+// Author: Felix Duvallet <felix.duvallet@epfl.ch>
 
 #include "allegro_node.h"
 #include "allegro_hand_common/controlAllegroHand.h"
@@ -25,7 +26,7 @@ AllegroNode::AllegroNode() {
   msgJoint.name.resize(DOF_JOINTS);
 
   // Initialize values: joint names should match URDF, desired torque and
-// velocity are both zero.
+  // velocity are both zero.
   for (int i = 0; i < DOF_JOINTS; i++) {
     msgJoint.name[i] = jointNames[i];
     desired_torque[i] = 0.0;
