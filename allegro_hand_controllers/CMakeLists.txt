@@ -33,11 +33,15 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+add_library(allegro_node_common src/allegro_node_common.cpp)
+
 ## Declare executables
 add_executable(allegro_node_grasp src/allegro_node_grasp.cpp)
 target_link_libraries(allegro_node_grasp ${catkin_LIBRARIES})
+
 add_executable(allegro_node_pd src/allegro_node_pd.cpp)
-target_link_libraries(allegro_node_pd ${catkin_LIBRARIES})
+target_link_libraries(allegro_node_pd allegro_node_common ${catkin_LIBRARIES})
+
 add_executable(allegro_node_velsat src/allegro_node_velsat.cpp)
 target_link_libraries(allegro_node_velsat ${catkin_LIBRARIES})
 
