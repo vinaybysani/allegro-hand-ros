@@ -2,7 +2,7 @@
 // Created by felixd on 10/1/15.
 //
 
-#include "allegro_node_common.h"
+#include "allegro_node.h"
 #include "allegro_hand_common/controlAllegroHand.h"
 
 
