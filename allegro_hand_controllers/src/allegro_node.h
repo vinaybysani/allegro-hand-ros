@@ -38,7 +38,8 @@ class AllegroNode {
     // This is the main method that must be implemented by the various
     // controller nodes.
     virtual void computeDesiredTorque() {
-      ROS_INFO("Compute desired torque -- base");};
+      ROS_ERROR("Called virtual function!");
+    };
 
     ros::Timer startTimerCallback();
 

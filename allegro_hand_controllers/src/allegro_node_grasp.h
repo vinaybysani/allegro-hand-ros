@@ -25,7 +25,9 @@ class BHand;
 class AllegroNodeGrasp : public AllegroNode {
 
  public:
+
     AllegroNodeGrasp();
+
     ~AllegroNodeGrasp();
 
     void initController(const std::string &whichHand);
@@ -35,11 +37,13 @@ class AllegroNodeGrasp : public AllegroNode {
     void libCmdCallback(const std_msgs::String::ConstPtr &msg);
 
     void setJointCallback(const sensor_msgs::JointState &msg);
+
     void envelopTorqueCallback(const std_msgs::Float32 &msg);
 
     void doIt(bool polling);
 
  protected:
+
     // Handles external joint command (sensor_msgs/JointState).
     ros::Subscriber joint_cmd_sub;
 

@@ -204,11 +204,11 @@ void AllegroNodePD::doIt(bool polling) {
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "allegro_hand_core_pd");
-  AllegroNodePD allegroNodePD;
+  AllegroNodePD allegroNode;
 
   bool polling = false;
   if (argv[1] == std::string("true")) {
     polling = true;
   }
-  allegroNodePD.doIt(polling);
+  allegroNode.doIt(polling);
 }
