@@ -25,6 +25,25 @@ std::map<std::string, eMotionType> bhand_grasps = {
         // {"move_fingertip", eMotionType_FINGERTIP_MOVING}
 };
 
+AllegroNodeGrasp::AllegroNodeGrasp()
+        : AllegroNode() {
+
+  initController(whichHand);
+
+  joint_cmd_sub = nh.subscribe(
+          JOINT_CMD_TOPIC, 3, &AllegroNodeGrasp::setJointCallback, this);
+  lib_cmd_sub = nh.subscribe(
+          LIB_CMD_TOPIC, 1, &AllegroNodeGrasp::libCmdCallback, this);
+
+  envelop_torque_sub = nh.subscribe(
+          ENVELOP_TORQUE_TOPIC, 1, &AllegroNodeGrasp::envelopTorqueCallback,
+          this);
+}
+
+AllegroNodeGrasp::~AllegroNodeGrasp() {
+  delete pBHand;
+}
+
 void AllegroNodeGrasp::libCmdCallback(const std_msgs::String::ConstPtr &msg) {
   ROS_INFO("CTRL: Heard: [%s]", msg->data.c_str());
   const std::string lib_cmd = msg->data;
@@ -99,25 +118,6 @@ void AllegroNodeGrasp::initController(const std::string &whichHand) {
   printf("-------------------------------------\n");
   printf("         Every command works.        \n");
   printf("*************************************\n");
-}
-
-AllegroNodeGrasp::AllegroNodeGrasp()
-        : AllegroNode() {
-
-  initController(whichHand);
-
-  joint_cmd_sub = nh.subscribe(
-          JOINT_CMD_TOPIC, 3, &AllegroNodeGrasp::setJointCallback, this);
-  lib_cmd_sub = nh.subscribe(
-          LIB_CMD_TOPIC, 1, &AllegroNodeGrasp::libCmdCallback, this);
-
-  envelop_torque_sub = nh.subscribe(
-          ENVELOP_TORQUE_TOPIC, 1, &AllegroNodeGrasp::envelopTorqueCallback,
-          this);
-}
-
-AllegroNodeGrasp::~AllegroNodeGrasp() {
-  delete pBHand;
 }
 
 void AllegroNodeGrasp::doIt(bool polling) {
