@@ -15,7 +15,7 @@ class AllegroNodeVelSat : public AllegroNode {
 
     void publishData();
 
-    void initController(const std::string& whichHand);
+    void initController();
 
     void libCmdCallback(const std_msgs::String::ConstPtr& msg);
 

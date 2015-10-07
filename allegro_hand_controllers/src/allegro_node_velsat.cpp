@@ -6,35 +6,15 @@
 // USE AT YOUR OWN RISK                            ///
 //////////////////////////////////////////////////////
 
-#include <iostream>
-#include <boost/thread/thread.hpp>
-#include <boost/date_time.hpp>
-#include <boost/thread/locks.hpp>
-
 #include "ros/ros.h"
-#include "ros/service.h"
-#include "ros/service_server.h"
-#include "sensor_msgs/JointState.h"
-#include "std_msgs/String.h"
-
-#include <stdio.h>
-#include <math.h>
-#include <algorithm>    // for std::min
-#include <iostream>
-#include <string>
-
 #include "allegro_hand_common/controlAllegroHand.h"
-
-
 #include "allegro_node_velsat.h"
 
 // Topics
-#define JOINT_STATE_TOPIC "/allegroHand/joint_states"
-#define JOINT_CMD_TOPIC "/allegroHand/joint_cmd"
-#define LIB_CMD_TOPIC "/allegroHand/lib_cmd"
-
-#define JOINT_DESIRED_TOPIC "/allegroHand/joint_desired_states"
-#define JOINT_CURRENT_TOPIC "/allegroHand/joint_current_states"
+const std::string JOINT_CMD_TOPIC = "/allegroHand/joint_cmd";
+const std::string LIB_CMD_TOPIC = "/allegroHand/lib_cmd";
+const std::string JOINT_DESIRED_TOPIC = "/allegroHand/joint_desired_states";
+const std::string JOINT_CURRENT_TOPIC = "/allegroHand/joint_current_states";
 
 #define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
 #define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
@@ -56,42 +36,36 @@ double v[DOF_JOINTS] = {0.0};
 
 double k_p[DOF_JOINTS] =
         {
-                1200.0, 1200.0, 1200.0,
-                1200.0,  // Default P Gains for Velocity Saturation Controller
-                1200.0, 1200.0, 1200.0,
-                1200.0,  // These gains are loaded if the 'gains_velSat.yaml' file is not loaded.
-                1200.0, 1200.0, 1200.0, 1200.0,
-                1200.0, 1200.0, 1200.0, 1200.0
+                // Default P Gains for PD Controller, loaded if
+                // 'gains_pd.yaml' file is not loaded.
+                1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0,
+                1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0
         };
 
 double k_d[DOF_JOINTS] =
         {
-                140.0, 140.0, 140.0,
-                140.0,  // Default D Gains for Velocity Saturation Controller
-                140.0, 140.0, 140.0,
-                140.0,  // These gains are loaded if the 'gains_velSat.yaml' file is not loaded.
-                140.0, 140.0, 140.0, 140.0,
-                140.0, 140.0, 140.0, 140.0
+                // Default D Gains for PD Controller, loaded if
+                // 'gains_pd.yaml' file is not loaded.
+                140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0,
+                140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0
         };
 
 double v_max[DOF_JOINTS] =
         {
-                10.0, 10.0, 10.0, 10.0,  // Velocity limits
-                10.0, 10.0, 10.0,
-                10.0,  // With a max of 10rad/s, 6rad/s is achieved
-                10.0, 10.0, 10.0,
-                10.0,  // within the ~90 degree range of each finger joint.
-                10.0, 10.0, 10.0, 10.0
-        };// These values are loaded if the 'gains_velSat.yaml' file is not loaded.
+                // Velocity limits. With a max of 10rad/s, 6rad/s is achieved
+                // within the ~90 degree range of each finger joint.
+                // These values are used if the 'gains_velSat.yaml' file is
+                // not loaded.
+                10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0,
+                10.0, 10.0, 10.0, 10.0, 10.0, 10.0
+        };
 
 double home_pose[DOF_JOINTS] =
         {
-                0.0, -10.0, 45.0, 45.0,    // Default (HOME) position (degrees)
-                0.0, -10.0, 45.0,
-                45.0,    // This position is loaded and set upon system start
-                5.0, -5.0, 50.0,
-                45.0,    // if no 'initial_position.yaml' parameter is loaded.
-                60.0, 25.0, 15.0, 45.0
+                // Default (HOME) position (degrees), set at system start if
+                // no 'initial_position.yaml' parameter is loaded.
+                0.0, -10.0, 45.0, 45.0,  0.0, -10.0, 45.0, 45.0,
+                5.0, -5.0, 50.0, 45.0, 60.0, 25.0, 15.0, 45.0
         };
 
 std::string pGainParams[DOF_JOINTS] =
@@ -153,7 +127,7 @@ std::string jointNames[DOF_JOINTS] =
 
 AllegroNodeVelSat::AllegroNodeVelSat()
         : AllegroNode() {
-  initController(whichHand);
+  initController();
 
   msgJoint_desired.position.resize(DOF_JOINTS);
   msgJoint_desired.velocity.resize(DOF_JOINTS);
@@ -237,7 +211,7 @@ void AllegroNodeVelSat::computeDesiredTorque() {
   }
 }
 
-void AllegroNodeVelSat::initController(const std::string &whichHand) {
+void AllegroNodeVelSat::initController() {
   // set gains via gains_velSat.yaml or to defaul values
   if (ros::param::has("~gains_velSat")) {
     ROS_INFO("CTRL: Velocity Saturation gains loaded from param server.");
