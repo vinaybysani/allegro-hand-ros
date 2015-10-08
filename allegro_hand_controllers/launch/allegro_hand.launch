@@ -3,6 +3,7 @@
        Required arguments:
           HAND:=right|left
        Suggested arguments:
+          NUM:=0|1|...
           ZEROS:=/path/to/zeros_file.yaml
           CONTROLLER:=grasp|pd|velsat
           RESPAWN:=true|false   Respawn controller if it dies.
