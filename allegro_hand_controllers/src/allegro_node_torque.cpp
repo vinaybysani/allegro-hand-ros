@@ -19,7 +19,7 @@ AllegroNodeTorque::AllegroNodeTorque()
   initController(whichHand);
 
   torque_cmd_sub = nh.subscribe(
-                    TORQUE_CMD_TOPIC, 3, &AllegroNodeTorque::setTorqueCallback, this);
+                     TORQUE_CMD_TOPIC, 1, &AllegroNodeTorque::setTorqueCallback, this, ros::TransportHints().tcpNoDelay());
   lib_cmd_sub = nh.subscribe(
                   LIB_CMD_TOPIC, 1, &AllegroNodeTorque::libCmdCallback, this);
 }
@@ -30,12 +30,12 @@ AllegroNodeTorque::~AllegroNodeTorque() {
 
 // Called when a desired joint position message is received
 void AllegroNodeTorque::setTorqueCallback(const sensor_msgs::JointState &msg) {
-  mutex->lock();
 
+  // No need to lock a mutex here
   for (int i = 0; i < DOF_JOINTS; i++)
     desired_torque[i] = msg.effort[i];
 
-  mutex->unlock();
+
   controlTorque = true;
 }
 
@@ -57,8 +57,8 @@ void AllegroNodeTorque::computeDesiredTorque() {
   // Position PD control for the desired joint configurations.
 
   if(controlTorque){
-    for (int i = 0; i < DOF_JOINTS; i++)
-      desired_torque[i] = desired_torque[i];
+    //    for (int i = 0; i < DOF_JOINTS; i++)
+    //      desired_torque[i] = desired_torque[i];
   }else{
     for (int i = 0; i < DOF_JOINTS; i++)
       desired_torque[i] = 0.0;
