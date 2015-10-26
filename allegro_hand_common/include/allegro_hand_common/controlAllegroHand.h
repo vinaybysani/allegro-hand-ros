@@ -12,7 +12,7 @@
 #define __CONTROLALLEGROHAND_H__
 
 #include "allegro_hand_common/allegroCANProtocol.h"
-#include "libpcan.h"
+#include "libpcan/libpcan.h"
 #include <fcntl.h>
 #include <list>
 #include <string>
