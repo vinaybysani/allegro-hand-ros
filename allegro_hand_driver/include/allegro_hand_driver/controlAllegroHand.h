@@ -11,7 +11,7 @@
 #ifndef __CONTROLALLEGROHAND_H__
 #define __CONTROLALLEGROHAND_H__
 
-#include "allegro_hand_common/allegroCANProtocol.h"
+#include "allegro_hand_driver/allegroCANProtocol.h"
 #include "libpcan/libpcan.h"
 #include <fcntl.h>
 #include <list>
