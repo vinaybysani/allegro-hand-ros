@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////
 
 #include "ros/ros.h"
-#include "allegro_hand_common/controlAllegroHand.h"
+#include "allegro_hand_driver/controlAllegroHand.h"
 #include "allegro_node_velsat.h"
 
 // Topics

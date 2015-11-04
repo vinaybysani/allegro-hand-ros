@@ -67,7 +67,7 @@ Packages
 --------
 
  * **allegro_hand** Metapackage.
- * **allegro_hand_common** Driver for talking with the allegro hand.
+ * **allegro_hand_driver** Driver for talking with the allegro hand.
  * **allegro_hand_controllers** Different nodes that actually control the hand.
  The AllegroNode class handles all the generic driver comms, each class then
  implements `computeDesiredTorque` differently (and can have various topic

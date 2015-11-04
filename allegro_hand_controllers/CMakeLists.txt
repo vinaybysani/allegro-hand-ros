@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   libpcan
   roscpp
   sensor_msgs
-  allegro_hand_common
+  allegro_hand_driver
   bhand
   roslaunch
 )
@@ -21,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES allegro_hand_controllers
-  CATKIN_DEPENDS allegro_hand_common bhand libpcan roscpp sensor_msgs
+  CATKIN_DEPENDS allegro_hand_driver bhand libpcan roscpp sensor_msgs
   DEPENDS system_lib
 )
 

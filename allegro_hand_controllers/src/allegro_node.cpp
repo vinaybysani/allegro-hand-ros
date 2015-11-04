@@ -4,7 +4,7 @@
 // Author: Felix Duvallet <felix.duvallet@epfl.ch>
 
 #include "allegro_node.h"
-#include "allegro_hand_common/controlAllegroHand.h"
+#include "allegro_hand_driver/controlAllegroHand.h"
 
 
 std::string jointNames[DOF_JOINTS] =

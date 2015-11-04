@@ -6,7 +6,7 @@
 #define PROJECT_ALLEGRO_NODE_COMMON_H
 
 // Defines DOF_JOINTS.
-#include "allegro_hand_common/allegroCANProtocol.h"
+#include "allegro_hand_driver/allegroCANProtocol.h"
 
 #include <string>
 #include <boost/thread/thread.hpp>
