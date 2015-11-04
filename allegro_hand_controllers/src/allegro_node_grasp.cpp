@@ -1,7 +1,7 @@
 #include "allegro_node_grasp.h"
 
 #include "BHand/BHand.h"
-#include "allegro_hand_common/controlAllegroHand.h"
+#include "allegro_hand_driver/controlAllegroHand.h"
 
 // Topics
 const std::string JOINT_CMD_TOPIC = "/allegroHand/joint_cmd";

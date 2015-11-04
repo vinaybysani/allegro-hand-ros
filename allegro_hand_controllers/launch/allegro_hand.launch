@@ -3,6 +3,7 @@
        Required arguments:
           HAND:=right|left
        Suggested arguments:
+          NUM:=0|1|...
           ZEROS:=/path/to/zeros_file.yaml
           CONTROLLER:=grasp|pd|velsat
           RESPAWN:=true|false   Respawn controller if it dies.
@@ -21,6 +22,13 @@
 
   -->
 
+
+  <!-- The inclusion of which_hand in the zero.yaml file has been deprecated.
+       Which hand (left/right) must now be specified as an argument when launching the Allegro Hand
+       as an input for both the robot_description and for the grasping library controllers. -->
+  <arg name="HAND"/>
+  <arg name="NUM" default='0'/>
+
   <!-- Visualization with rviz, only if arg VISUALIZE is set to true. Default is
        false, the allegro_viz.launch can be started separated. -->
   <arg name ="VISUALIZE" default="false" />
@@ -37,13 +45,6 @@
        *The default controller is 'grasp' which employs the included grasping library (libBHand). -->
 
   <arg name="POLLING" default="true"/> <!-- true, false for polling the CAN communication -->
-
-  <!-- The inclusion of which_hand in the zero.yaml file has been deprecated.
-       Which hand (left/right) must now be specified as an argument when launching the Allegro Hand
-       as an input for both the robot_description and for the grasping library controllers. -->
-
-  <arg name="HAND"/>
-  <arg name="NUM" default='0'/>
 
   <!-- ls -l /dev/pcan* to see your open CAN ports. Auto means find it
        automatically, and ignores the CAN_DEVICE argument. -->

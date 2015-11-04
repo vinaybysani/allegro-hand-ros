@@ -11,8 +11,8 @@
 #ifndef __CONTROLALLEGROHAND_H__
 #define __CONTROLALLEGROHAND_H__
 
-#include "allegro_hand_common/allegroCANProtocol.h"
-#include <libpcan.h>
+#include "allegro_hand_driver/allegroCANProtocol.h"
+#include "libpcan/libpcan.h"
 #include <fcntl.h>
 #include <list>
 #include <string>
@@ -59,7 +59,7 @@ private:
 	double curr_torque[DOF_JOINTS];
 	double desired_position[DOF_JOINTS];
 	double desired_torque[DOF_JOINTS];
-	
+
 	double hand_version;
 	double tau_cov_const;
 
@@ -67,7 +67,7 @@ private:
 	int    mEncoderOffset[DOF_JOINTS];
 	int    mEncoderDirection[DOF_JOINTS];
 	int    mMotorDirection[DOF_JOINTS];
-	
+
 	//std::string hand_version;
 
 	volatile bool mEmergencyStop;

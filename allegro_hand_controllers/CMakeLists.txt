@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   libpcan
   roscpp
   sensor_msgs
-  allegro_hand_common
+  allegro_hand_driver
   bhand
   roslaunch
 )
@@ -21,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES allegro_hand_controllers
-  CATKIN_DEPENDS allegro_hand_common bhand libpcan roscpp sensor_msgs
+  CATKIN_DEPENDS allegro_hand_driver bhand libpcan roscpp sensor_msgs
   DEPENDS system_lib
 )
 
@@ -45,7 +45,8 @@ target_link_libraries(allegro_node_pd allegro_node ${catkin_LIBRARIES})
 add_executable(allegro_node_velsat src/allegro_node_velsat.cpp)
 target_link_libraries(allegro_node_velsat allegro_node ${catkin_LIBRARIES})
 
-roslaunch_add_file_check(launch/allegro_hand.launch)
+# This is disabled until roslaunch tests can pass required arguments.
+# roslaunch_add_file_check(launch/allegro_hand.launch)
 
 
 #############

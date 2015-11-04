@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(allegro_hand_common)
+project(allegro_hand_driver)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES allegro_hand_common
+  LIBRARIES allegro_hand_driver
   CATKIN_DEPENDS roscpp std_msgs libpcan
 #  DEPENDS system_lib
 )
@@ -30,7 +30,7 @@ include_directories(
   include
 )
 
-add_library(allegro_hand_common
+add_library(allegro_hand_driver
   src/controlAllegroHand.cpp
 )
 
@@ -38,7 +38,7 @@ add_library(allegro_hand_common
 ## Install ##
 #############
 
-install(TARGETS allegro_hand_common
+install(TARGETS allegro_hand_driver
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

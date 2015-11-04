@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>allegro_hand_common</name>
+  <name>allegro_hand_driver</name>
   <version>1.0.1</version>
   <description>
     ROS stack for SimLab's Allegro Hand.

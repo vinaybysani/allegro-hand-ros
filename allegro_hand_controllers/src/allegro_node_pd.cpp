@@ -4,7 +4,7 @@ using namespace std;
 #include <stdio.h>
 
 #include "ros/ros.h"
-#include "allegro_hand_common/controlAllegroHand.h"
+#include "allegro_hand_driver/controlAllegroHand.h"
 
 // Topics
 const std::string JOINT_CMD_TOPIC = "/allegroHand/joint_cmd";
