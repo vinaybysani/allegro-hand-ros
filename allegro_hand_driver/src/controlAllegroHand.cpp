@@ -214,7 +214,6 @@ void controlAllegroHand::init(int mode) {
     }
     else {
       itr++;
-      ROS_WARN("Problem communicating over CAN.");
     }
 
     if (itr > 4) {
