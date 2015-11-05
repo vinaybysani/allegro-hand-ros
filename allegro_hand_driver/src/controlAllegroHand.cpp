@@ -142,6 +142,11 @@ void controlAllegroHand::init(int mode) {
 
   const char *CAN_CH_c = CAN_CH.c_str();
 
+  if(CAN_CH.empty()) {
+    ROS_ERROR("Invalid (empty) CAN channel, cannot proceed. Check PCAN comms.");
+    return;
+  }
+
   ROS_INFO("CAN: Opening device on channel [%s]", CAN_CH_c);
 
   CanHandle = LINUX_CAN_Open(CAN_CH_c, O_RDWR);
