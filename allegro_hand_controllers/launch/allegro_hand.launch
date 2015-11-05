@@ -76,6 +76,7 @@
         output="screen"
         clear_params="true"
         respawn="$(arg RESPAWN)"
+        respawn_delay="2"
         args="$(arg POLLING)" >
 
     <!-- Remapping of topics into enumerated allegroHand_# namespace -->
