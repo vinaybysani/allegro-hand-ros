@@ -47,10 +47,14 @@ void AllegroNodeTorque::libCmdCallback(const std_msgs::String::ConstPtr &msg) {
 
   // Only turns torque control on/off: listens to 'save' (space-bar) or 'on'
   // (not published).
-  if (lib_cmd.compare("on") == 0 || lib_cmd.compare("save") == 0)
+  if (lib_cmd.compare("on") == 0 || lib_cmd.compare("save") == 0) {
+    ROS_INFO("Torque control is on.");
     controlTorque = true;
-  else if (lib_cmd.compare("off") == 0)
+  }
+  else if (lib_cmd.compare("off") == 0) {
+    ROS_INFO("Torque control is off.");
     controlTorque = false;
+  }
 }
 
 void AllegroNodeTorque::computeDesiredTorque() {
@@ -70,7 +74,7 @@ void AllegroNodeTorque::initController(const std::string &whichHand) {
   printf("*************************************\n");
   printf("     Joint Torque Control Method     \n");
   printf("-------------------------------------\n");
-  printf("  Only 'O' (off), 'Space' (on) work. \n");
+  printf("  Only 'O' (off), 'S' (on) work.     \n");
   printf("*************************************\n");
 }
 
