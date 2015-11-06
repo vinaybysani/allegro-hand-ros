@@ -10,31 +10,31 @@ using namespace std;
 const std::string TORQUE_CMD_TOPIC = "/allegroHand/torque_cmd";
 const std::string LIB_CMD_TOPIC = "/allegroHand/lib_cmd";
 
-
-
 // Constructor: subscribe to topics.
 AllegroNodeTorque::AllegroNodeTorque()
   : AllegroNode() {  // Call super constructor.
 
   initController(whichHand);
 
+  // Use tcpNoDelay to achieve stable control loop.
   torque_cmd_sub = nh.subscribe(
-                     TORQUE_CMD_TOPIC, 1, &AllegroNodeTorque::setTorqueCallback, this, ros::TransportHints().tcpNoDelay());
+      TORQUE_CMD_TOPIC, 1, &AllegroNodeTorque::setTorqueCallback, this,
+      ros::TransportHints().tcpNoDelay());
+
   lib_cmd_sub = nh.subscribe(
-                  LIB_CMD_TOPIC, 1, &AllegroNodeTorque::libCmdCallback, this);
+      LIB_CMD_TOPIC, 1, &AllegroNodeTorque::libCmdCallback, this);
 }
 
 AllegroNodeTorque::~AllegroNodeTorque() {
-  ROS_INFO("PD controller node is shutting down");
+  ROS_INFO("Torque controller node is shutting down");
 }
 
 // Called when a desired joint position message is received
 void AllegroNodeTorque::setTorqueCallback(const sensor_msgs::JointState &msg) {
 
-  // No need to lock a mutex here
+  // ROS C++ callbacks are *not* threaded, so no need to lock the mutex.
   for (int i = 0; i < DOF_JOINTS; i++)
     desired_torque[i] = msg.effort[i];
-
 
   controlTorque = true;
 }
@@ -45,36 +45,32 @@ void AllegroNodeTorque::libCmdCallback(const std_msgs::String::ConstPtr &msg) {
 
   const std::string lib_cmd = msg->data.c_str();
 
-  // Compare the message received to an expected input
-  if (lib_cmd.compare("on") == 0)
+  // Only turns torque control on/off: listens to 'save' (space-bar) or 'on'
+  // (not published).
+  if (lib_cmd.compare("on") == 0 || lib_cmd.compare("save") == 0)
     controlTorque = true;
   else if (lib_cmd.compare("off") == 0)
     controlTorque = false;
-
 }
 
 void AllegroNodeTorque::computeDesiredTorque() {
-  // Position PD control for the desired joint configurations.
-
-  if(controlTorque){
-    //    for (int i = 0; i < DOF_JOINTS; i++)
-    //      desired_torque[i] = desired_torque[i];
-  }else{
+  if(!controlTorque) {
     for (int i = 0; i < DOF_JOINTS; i++)
       desired_torque[i] = 0.0;
   }
 
+  // When controlTorque is true, there is no need to do anything (desired_torque
+  // is already set in the callback).
 }
 
 void AllegroNodeTorque::initController(const std::string &whichHand) {
 
   controlTorque = false;
 
-
   printf("*************************************\n");
-  printf("      Joint PD Control Method        \n");
+  printf("     Joint Torque Control Method     \n");
   printf("-------------------------------------\n");
-  printf("  Only 'H', 'O', 'S', 'Space' works. \n");
+  printf("  Only 'O' (off), 'Space' (on) work. \n");
   printf("*************************************\n");
 }
 
