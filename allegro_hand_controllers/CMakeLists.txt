@@ -45,9 +45,11 @@ target_link_libraries(allegro_node_pd allegro_node ${catkin_LIBRARIES})
 add_executable(allegro_node_velsat src/allegro_node_velsat.cpp)
 target_link_libraries(allegro_node_velsat allegro_node ${catkin_LIBRARIES})
 
+add_executable(allegro_node_torque src/allegro_node_torque.cpp)
+target_link_libraries(allegro_node_torque allegro_node ${catkin_LIBRARIES})
+
 # This is disabled until roslaunch tests can pass required arguments.
 # roslaunch_add_file_check(launch/allegro_hand.launch)
-
 
 #############
 ## Install ##

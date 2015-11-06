@@ -1,15 +1,15 @@
-allegro_hand_ros beta2, unofficial fork
-=======================================
+allegro-hand unofficial fork
+============================
 
 This is an unofficial fork of SimLab's allegro [hand ros package][1].
 
 [1]: https://github.com/simlabrobotics/allegro_hand_ros
 
-It improves upon the SimLab version by providing a catkin-ized version,
-simplifies the launch file structure,
-updates the package/node names to have a more consistent structure,
-improves the build process by creating a common driver, introduces an
-AllegroNode C++ class that reduces the amount of duplicated code.
+It improves significantly upon the SimLab version by providing a catkin-ized
+version, simplifies the launch file structure, updates the package/node names to
+have a more consistent structure, improves the build process by creating a
+common driver, introduces an AllegroNode C++ class that reduces the amount of
+duplicated code.
 
 It also provides the BHand library directly in this package (including both
 32-bit and 64-bit versions, though 32-bit systems will need to update the
@@ -26,6 +26,7 @@ non-compatible changes between the two version are:
    `rospack find` works with them.
  - These packages will likely not work with pre-hydro versions (only tested on
    indigo so far, please let me know if this works on other distributions).
+ - Added a torque controller (from @nisommer).
 
 Launch file instructions:
 ------------------------
@@ -41,7 +42,7 @@ Optional (recommended) arguments:
 
           NUM:=0|1|...
           ZEROS:=/path/to/zeros_file.yaml
-          CONTROLLER:=grasp|pd|velsat
+          CONTROLLER:=grasp|pd|velsat|torque
           RESPAWN:=true|false   Respawn controller if it dies.
           KEYBOARD:=true|false  (default is true)
           AUTO_CAN:=true|false  (default is true)
@@ -75,6 +76,7 @@ Packages
    * grasp: Apply various pre-defined grasps, including gravity compensation.
    * pd: Joint space control: save and hold positions.
    * velsat: velocity saturation joint space control (supposedly experimental)
+   * torque: Direct torque control.
  * **allegro_hand_description** xacro descriptions for the kinematics of the
      hand, rviz configuration and meshes.
  * **allegro_hand_keyboard** Node that sends the commanded grasps. All commands
