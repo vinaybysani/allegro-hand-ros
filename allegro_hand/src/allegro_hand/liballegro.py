@@ -7,7 +7,7 @@ from sensor_msgs.msg import JointState
 
 class AllegroClient(object):
 
-    def __init__(self):
+    def __init__(self, num_joints=16):
 
         # Topics (that can be remapped) for named graps
         # (ready/envelop/grasp/etc.), joint commands (position and
@@ -25,6 +25,8 @@ class AllegroClient(object):
                 topic_joint_command, JointState, queue_size=10)
         self.pub_envelop_torque = rospy.Publisher(
                 evelop_torque_topic, Float32, queue_size=1)
+
+        self._num_joints = num_joints
 
         rospy.loginfo('Publishers started. {}'.format(topic_grasp_command))
 
@@ -51,13 +53,36 @@ class AllegroClient(object):
             'gravity': 'gravcomp'
             }
 
-    def command_joint_pose(self, pose):
-        # TODO check number of dimensions of pose data.
+    def command_joint_pose(self, desired_pose):
+        """
+        Command a specific desired hand pose.
 
-        msg = JointState()
-        msg.position = pose
-        self.pub_joint.publish(msg)
-        rospy.loginfo('Published desired pose.')
+        The desired pose must be the correct dimensionality (self._num_joints).
+        Only the pose is commanded, and **no bound-checking happens here**:
+        any commanded pose must be valid or Bad Things May Happen.
+
+        :param desired_pose: The desired joint configurations.
+        :return: True if
+        """
+
+        # Check that the desired pose can have len() applied to it, and that the
+        # number of dimensions is the same as the number of hand joints.
+        if (not hasattr(desired_pose, '__len__') or
+                    len(desired_pose) != self._num_joints):
+            rospy.logwarn('Desired pose must be a {}-dimensional array: got {}.'
+                          .format(self._num_joints, desired_pose))
+            return False
+
+        msg = JointState()  # Create and publish
+        try:
+            msg.position = desired_pose
+            self.pub_joint.publish(msg)
+            rospy.loginfo('Published desired pose.')
+            return True
+        except rospy.exceptions.ROSSerializationException:
+            rospy.logwarn('Incorrect type for desired pose: {}.'.format(
+                    desired_pose))
+            return False
 
     def command_hand_configuration(self, hand_config):
         """

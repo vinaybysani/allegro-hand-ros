@@ -1,10 +1,15 @@
 import unittest
 from allegro_hand.liballegro import AllegroClient
+from sensor_msgs.msg import JointState
 
 
 class MockPublisher(object):
+    """
+    Mock publisher: just counts the number of messages that were sent out.
+    """
     def __init__(self):
         self._pub_count = 0
+        self._last_published = None
 
     def publish(self, args):
         self._pub_count += 1
@@ -61,3 +66,30 @@ class TestAllegro(unittest.TestCase):
         self.assertEqual(1, self.client.pub_envelop_torque._pub_count)
         published_value = self.client.pub_envelop_torque._last_published.data
         self.assertEqual(0.0, published_value)
+
+    def test_command_pose(self):
+        des_pose = [0.123] * 16
+        ret = self.client.command_joint_pose(des_pose)
+        self.assertTrue(ret)
+        self.assertEqual(1, self.client.pub_joint._pub_count)
+        published_state = self.client.pub_joint._last_published
+
+        ref_state = JointState()
+        ref_state.position = des_pose
+        self.assertEqual(ref_state, published_state)
+
+    def test_command_pose_wrong_dimensions(self):
+        des_pose = [0.123] * 2  # Should be 16-dim
+        ret = self.client.command_joint_pose(des_pose)
+        self.assertFalse(ret)
+        self.assertEqual(0, self.client.pub_joint._pub_count)
+        published_state = self.client.pub_joint._last_published
+        self.assertIsNone(published_state)
+
+    def test_command_pose_int_not_array(self):
+        des_pose = 0.123  # Not even an iterable array.
+        ret = self.client.command_joint_pose(des_pose)
+        self.assertFalse(ret)
+        self.assertEqual(0, self.client.pub_joint._pub_count)
+        published_state = self.client.pub_joint._last_published
+        self.assertIsNone(published_state)
