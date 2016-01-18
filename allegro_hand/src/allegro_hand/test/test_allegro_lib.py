@@ -97,3 +97,7 @@ class TestAllegro(unittest.TestCase):
     def test_poll_position(self):
         joints = self.client.poll_joint_position(wait=False)
         self.assertIsNone(joints)
+
+    def test_topic_prefix(self):
+        client = AllegroClient(hand_topic_prefix='/Prefix')
+        self.assertEqual('/Prefix/lib_cmd', client.pub_grasp.name)
