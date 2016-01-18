@@ -9,7 +9,12 @@ from allegro_hand.liballegro import AllegroClient
 def wave_fingers(allegro_client,
                  finger_indices=None,
                  num_seconds=10):
-
+    """
+    Wave one or more fingers in a sinusoidal pattern.
+    :param allegro_client: The client.
+    :param finger_indices: List of finger indices (between 0 and 3)
+    :param num_seconds: Total time to spend doing this.
+    """
     hz = 4
     r = rospy.Rate(hz)
 
@@ -39,36 +44,40 @@ def wave_fingers(allegro_client,
     return
 
 
+def command_named_configurations(allegro_client, delay=2.0):
+    """
+    Go through a bunch of the named configurations, with a delay between them.
+
+    :param allegro_client: The client
+    :param delay: Time to sleep between configs.
+    """
+
+    # Run through these named configurations; notice there are multiple ways of
+    # calling the same configuration.
+    configs = ['ready', 'three finger grasp', 'three_finger_grasp',
+               'index_pinch', 'gravity_compensation', 'ready']
+
+    for config in configs:
+        rospy.loginfo('Commanding configuration: {}'.format(config))
+        allegro_client.command_hand_configuration(config)
+        rospy.sleep(delay)
+    return
+
+
 def run(args):
     print args
     rospy.init_node('example_allegro_lib', args)
     client = AllegroClient()
     rospy.sleep(0.5)  # Wait for connections.
 
-    wave_fingers(client, finger_indices=[0, 1, 2], num_seconds=20)
     client.command_hand_configuration('ready')
 
-    return
-
-    pose[0:5] = [0.4] * 4
-    client.command_joint_position(pose)
-    rospy.sleep(1.0)
-
-    return
-
-    client.command_hand_configuration('home')
-    return
-
-    rospy.sleep(1.0)
-    client.set_envelop_torque(0.1)
-    client.command_hand_configuration('envelop')
-
-    rospy.sleep(1.0)
+    wave_fingers(client, finger_indices=[0, 1], num_seconds=5)
     client.command_hand_configuration('ready')
 
-    rospy.sleep(1.0)
+    command_named_configurations(client)
 
-
+    return
 
 if __name__ == '__main__':
     args = sys.argv[1:]
