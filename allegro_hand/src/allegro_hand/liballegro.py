@@ -7,17 +7,39 @@ from sensor_msgs.msg import JointState
 
 class AllegroClient(object):
 
-    def __init__(self, num_joints=16):
+    def __init__(self, hand_topic_prefix='/allegroHand', num_joints=16):
+        """ Simple python interface to the Allegro Hand.
+
+        The AllegroClient is a simple python interface to an allegro robot hand.
+        It enables you to command the hand directly through python library
+        calls.
+
+        The constructors sets up publishers and subscribes to the joint states
+        topic for the hand.
+
+        Note on hand topic names: The default topic (/allegroHand/foo) can be
+        remapped to a different topic prefix (/allegroHand_0/foo) in one of two
+        ways:
+          1. pass in /allegroHand_0 as the hand_topic_prefix
+          2. remap *each* topic on the command line
+             (/allegroHand/joint_cmd:=/allegroHand_0/joint_cmd)
+        The first method is probably easier.
+
+        :param hand_topic_prefix: The prefix to use for *all* hand topics
+        (publishing & subscribing).
+        :param num_joints: Number of expected joints, used when commanding joint
+        positions.
+        """
 
         # Topics (that can be remapped) for named graps
         # (ready/envelop/grasp/etc.), joint commands (position and
-        # velocity), envelop torque.
-        topic_grasp_command = '/allegroHand_0/lib_cmd'
-        topic_joint_command = '/allegroHand_0/joint_cmd'
-        topic_joint_state = '/allegroHand_0/joint_states'
-        topic_envelop_torque = '/allegroHand_0/envelop_torque'
-
-        # TODO Figure out a way to remap topics automatically: rosparam?
+        # velocity), joint state (subscribing), and envelop torque. Note that
+        # we can change the hand topic prefix (for example, to /allegroHand_0)
+        # instead of remapping it at the command line.
+        topic_grasp_command = '{}/lib_cmd'.format(hand_topic_prefix)
+        topic_joint_command = '{}/joint_cmd'.format(hand_topic_prefix)
+        topic_joint_state = '{}/joint_states'.format(hand_topic_prefix)
+        topic_envelop_torque = '{}/envelop_torque'.format(hand_topic_prefix)
 
         # Publishers for above topics.
         self.pub_grasp = rospy.Publisher(
@@ -32,7 +54,8 @@ class AllegroClient(object):
 
         self._num_joints = num_joints
 
-        rospy.loginfo('Publishers started. {}'.format(topic_grasp_command))
+        rospy.loginfo('Allegro Client start with hand topic: {}'.format(
+            hand_topic_prefix))
 
         # "Named" grasps are those provided by the bhand library. These can be
         # commanded directly and the hand will execute them. The keys are more
@@ -93,8 +116,7 @@ class AllegroClient(object):
             return False
 
     def poll_joint_position(self, wait=False):
-        """
-        Get the current joint positions of the hand.
+        """ Get the current joint positions of the hand.
 
         :param wait: If true, waits for a 'fresh' state reading.
         :return: Joint positions, or None if none have been received.
@@ -137,6 +159,10 @@ class AllegroClient(object):
             return False
 
     def list_hand_configurations(self):
+        """
+        :return: List of valid strings for named hand configurations (including
+        duplicates).
+        """
         return self._named_grasps_mappings.keys()
 
     def set_envelop_torque(self, torque):
@@ -155,3 +181,5 @@ class AllegroClient(object):
         msg = Float32(torque)
         self.pub_envelop_torque.publish(msg)
         return True
+
+# For an example of this in action, see example_allegro_lib.py
