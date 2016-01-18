@@ -69,7 +69,7 @@ class TestAllegro(unittest.TestCase):
 
     def test_command_pose(self):
         des_pose = [0.123] * 16
-        ret = self.client.command_joint_pose(des_pose)
+        ret = self.client.command_joint_position(des_pose)
         self.assertTrue(ret)
         self.assertEqual(1, self.client.pub_joint._pub_count)
         published_state = self.client.pub_joint._last_published
@@ -80,7 +80,7 @@ class TestAllegro(unittest.TestCase):
 
     def test_command_pose_wrong_dimensions(self):
         des_pose = [0.123] * 2  # Should be 16-dim
-        ret = self.client.command_joint_pose(des_pose)
+        ret = self.client.command_joint_position(des_pose)
         self.assertFalse(ret)
         self.assertEqual(0, self.client.pub_joint._pub_count)
         published_state = self.client.pub_joint._last_published
@@ -88,7 +88,7 @@ class TestAllegro(unittest.TestCase):
 
     def test_command_pose_int_not_array(self):
         des_pose = 0.123  # Not even an iterable array.
-        ret = self.client.command_joint_pose(des_pose)
+        ret = self.client.command_joint_position(des_pose)
         self.assertFalse(ret)
         self.assertEqual(0, self.client.pub_joint._pub_count)
         published_state = self.client.pub_joint._last_published

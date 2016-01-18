@@ -53,7 +53,7 @@ class AllegroClient(object):
             'gravity': 'gravcomp'
             }
 
-    def command_joint_pose(self, desired_pose):
+    def command_joint_position(self, desired_pose):
         """
         Command a specific desired hand pose.
 
