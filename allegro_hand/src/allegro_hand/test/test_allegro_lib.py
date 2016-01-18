@@ -93,3 +93,7 @@ class TestAllegro(unittest.TestCase):
         self.assertEqual(0, self.client.pub_joint._pub_count)
         published_state = self.client.pub_joint._last_published
         self.assertIsNone(published_state)
+
+    def test_poll_position(self):
+        joints = self.client.poll_joint_position(wait=False)
+        self.assertIsNone(joints)

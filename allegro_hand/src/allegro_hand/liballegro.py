@@ -14,7 +14,8 @@ class AllegroClient(object):
         # velocity), envelop torque.
         topic_grasp_command = '/allegroHand_0/lib_cmd'
         topic_joint_command = '/allegroHand_0/joint_cmd'
-        envelop_torque_topic = '/allegroHand_0/envelop_torque'
+        topic_joint_state = '/allegroHand_0/joint_states'
+        topic_envelop_torque = '/allegroHand_0/envelop_torque'
 
         # TODO Figure out a way to remap topics automatically: rosparam?
 
@@ -24,7 +25,10 @@ class AllegroClient(object):
         self.pub_joint = rospy.Publisher(
             topic_joint_command, JointState, queue_size=10)
         self.pub_envelop_torque = rospy.Publisher(
-            envelop_torque_topic, Float32, queue_size=1)
+            topic_envelop_torque, Float32, queue_size=1)
+        rospy.Subscriber(topic_joint_state, JointState,
+                         self._joint_state_callback)
+        self._joint_state = None
 
         self._num_joints = num_joints
 
@@ -53,13 +57,17 @@ class AllegroClient(object):
             'gravity': 'gravcomp'
             }
 
+    def _joint_state_callback(self, data):
+        self._joint_state = data
+
     def command_joint_position(self, desired_pose):
         """
         Command a specific desired hand pose.
 
         The desired pose must be the correct dimensionality (self._num_joints).
         Only the pose is commanded, and **no bound-checking happens here**:
-        any commanded pose must be valid or Bad Things May Happen.
+        any commanded pose must be valid or Bad Things May Happen. (Generally,
+        values between 0.0 and 1.5 are fine, but use this at your own risk.)
 
         :param desired_pose: The desired joint configurations.
         :return: True if pose is published, False otherwise.
@@ -83,6 +91,23 @@ class AllegroClient(object):
             rospy.logwarn('Incorrect type for desired pose: {}.'.format(
                 desired_pose))
             return False
+
+    def poll_joint_position(self, wait=False):
+        """
+        Get the current joint positions of the hand.
+
+        :param wait: If true, waits for a 'fresh' state reading.
+        :return: Joint positions.
+        """
+        if wait:
+            self._joint_state = None  # Wait for the next state reading.
+            while not self._joint_state:
+                rospy.sleep(0.001)
+
+        if self._joint_state:
+            return self._joint_state.position
+        else:
+            return None
 
     def command_hand_configuration(self, hand_config):
         """

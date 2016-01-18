@@ -77,6 +77,12 @@ def run(args):
 
     command_named_configurations(client)
 
+    # Get the hand joint positions.
+    joints = client.poll_joint_position(wait=False)
+    rospy.loginfo('Hand configuration: {}'.format(joints))
+    joints = client.poll_joint_position(wait=True)
+    rospy.loginfo('Hand configuration: {}'.format(joints))
+
     return
 
 if __name__ == '__main__':
