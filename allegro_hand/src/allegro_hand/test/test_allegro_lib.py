@@ -5,6 +5,7 @@ from allegro_hand.liballegro import AllegroClient
 class MockPublisher(object):
     def __init__(self):
         self._pub_count = 0
+
     def publish(self, args):
         self._pub_count += 1
     pass
@@ -33,3 +34,8 @@ class TestAllegro(unittest.TestCase):
         ret = self.client.command_hand_configuration('garbage')
         self.assertEqual(False, ret)
         self.assertEqual(0, self.client.pub_grasp._pub_count)
+
+    def test_list_hand_configs(self):
+        ret = self.client.list_hand_configurations()
+        self.assertTrue(ret)  # Have something.
+        self.assertIn('three_finger_grasp', ret)  # Have the human-readable one.
