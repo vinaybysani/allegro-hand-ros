@@ -14,17 +14,17 @@ class AllegroClient(object):
         # velocity), envelop torque.
         topic_grasp_command = '/allegroHand_0/lib_cmd'
         topic_joint_command = '/allegroHand_0/joint_cmd'
-        evelop_torque_topic = '/allegroHand_0/envelop_torque'
+        envelop_torque_topic = '/allegroHand_0/envelop_torque'
 
         # TODO Figure out a way to remap topics automatically: rosparam?
 
         # Publishers for above topics.
         self.pub_grasp = rospy.Publisher(
-                topic_grasp_command, String, queue_size=10)
+            topic_grasp_command, String, queue_size=10)
         self.pub_joint = rospy.Publisher(
-                topic_joint_command, JointState, queue_size=10)
+            topic_joint_command, JointState, queue_size=10)
         self.pub_envelop_torque = rospy.Publisher(
-                evelop_torque_topic, Float32, queue_size=1)
+            envelop_torque_topic, Float32, queue_size=1)
 
         self._num_joints = num_joints
 
@@ -62,14 +62,14 @@ class AllegroClient(object):
         any commanded pose must be valid or Bad Things May Happen.
 
         :param desired_pose: The desired joint configurations.
-        :return: True if
+        :return: True if pose is published, False otherwise.
         """
 
-        # Check that the desired pose can have len() applied to it, and that the
-        # number of dimensions is the same as the number of hand joints.
+        # Check that the desired pose can have len() applied to it, and that
+        # the number of dimensions is the same as the number of hand joints.
         if (not hasattr(desired_pose, '__len__') or
-                    len(desired_pose) != self._num_joints):
-            rospy.logwarn('Desired pose must be a {}-dimensional array: got {}.'
+                len(desired_pose) != self._num_joints):
+            rospy.logwarn('Desired pose must be a {}-d array: got {}.'
                           .format(self._num_joints, desired_pose))
             return False
 
@@ -81,7 +81,7 @@ class AllegroClient(object):
             return True
         except rospy.exceptions.ROSSerializationException:
             rospy.logwarn('Incorrect type for desired pose: {}.'.format(
-                    desired_pose))
+                desired_pose))
             return False
 
     def command_hand_configuration(self, hand_config):
@@ -108,7 +108,7 @@ class AllegroClient(object):
             return True
         else:
             rospy.logwarn('Unable to command unknown grasp {}'.format(
-                    hand_config))
+                hand_config))
             return False
 
     def list_hand_configurations(self):
