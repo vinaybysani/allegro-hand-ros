@@ -97,7 +97,7 @@ class AllegroClient(object):
         Get the current joint positions of the hand.
 
         :param wait: If true, waits for a 'fresh' state reading.
-        :return: Joint positions.
+        :return: Joint positions, or None if none have been received.
         """
         if wait:
             self._joint_state = None  # Wait for the next state reading.
