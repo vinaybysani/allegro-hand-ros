@@ -8,6 +8,7 @@ class MockPublisher(object):
 
     def publish(self, args):
         self._pub_count += 1
+        self._last_published = args
     pass
 
 
@@ -39,3 +40,24 @@ class TestAllegro(unittest.TestCase):
         ret = self.client.list_hand_configurations()
         self.assertTrue(ret)  # Have something.
         self.assertIn('three_finger_grasp', ret)  # Have the human-readable one.
+
+    def test_command_envelop_torque(self):
+        ret = self.client.set_envelop_torque(0.5)
+        self.assertTrue(ret)
+        self.assertEqual(1, self.client.pub_envelop_torque._pub_count)
+        published_value = self.client.pub_envelop_torque._last_published.data
+        self.assertEqual(0.5, published_value)
+
+    def test_command_large_envelop_torque(self):
+        ret = self.client.set_envelop_torque(1.5)
+        self.assertTrue(ret)
+        self.assertEqual(1, self.client.pub_envelop_torque._pub_count)
+        published_value = self.client.pub_envelop_torque._last_published.data
+        self.assertEqual(1.0, published_value)
+
+    def test_command_small_envelop_torque(self):
+        ret = self.client.set_envelop_torque(-0.5)
+        self.assertTrue(ret)
+        self.assertEqual(1, self.client.pub_envelop_torque._pub_count)
+        published_value = self.client.pub_envelop_torque._last_published.data
+        self.assertEqual(0.0, published_value)

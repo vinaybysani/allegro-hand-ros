@@ -90,9 +90,18 @@ class AllegroClient(object):
         return self._named_grasps_mappings.keys()
 
     def set_envelop_torque(self, torque):
+        """
+        Command a specific envelop grasping torque.
 
-        rospy.logwarn('Not implemented!')
+        This only applies for the envelop named hand command. You can set the
+        envelop torque before or after commanding the envelop grasp.
 
-        # TODO check boundaries.
-        pass
+        :param torque: Desired torque, between 0 and 1. Values outside this
+        range are clamped.
+        :return: True.
+        """
 
+        torque = max(0.0, min(1.0, torque))  # Clamp within [0, 1]
+        msg = Float32(torque)
+        self.pub_envelop_torque.publish(msg)
+        return True
