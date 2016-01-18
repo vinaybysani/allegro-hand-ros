@@ -99,8 +99,8 @@ class AllegroClient(object):
         :param wait: If true, waits for a 'fresh' state reading.
         :return: Joint positions, or None if none have been received.
         """
-        if wait:
-            self._joint_state = None  # Wait for the next state reading.
+        if wait:  # Clear joint state and wait for the next reading.
+            self._joint_state = None
             while not self._joint_state:
                 rospy.sleep(0.001)
 
