@@ -1,9 +1,20 @@
 #!/usr/bin/env python
 
 import sys
+import argparse
 import numpy as np
 import rospy
 from allegro_hand.liballegro import AllegroClient
+
+"""
+This file contains several examples of the AllegroClient python library that
+allows you to interact with the Allegro hand directly using python.
+
+Set the allegro hand topic directly using:
+   --hand_prefix=/allegroHand_0
+(or some other topic name.)
+
+"""
 
 
 def wave_fingers(allegro_client,
@@ -65,16 +76,25 @@ def command_named_configurations(allegro_client, delay=2.0):
 
 
 def run(args):
-    print args
-    rospy.init_node('example_allegro_lib', args)
-    client = AllegroClient()
+
+    parser = argparse.ArgumentParser(description='Allegro python library')
+    parser.add_argument('--hand_prefix', type=str,
+                        help='ROS topic prefix for the hand.',
+                        default='/allegroHand')
+
+    (parsed_args, other_args) = parser.parse_known_args(args)
+    rospy.init_node('example_allegro_lib', other_args)
+
+    client = AllegroClient(hand_topic_prefix=parsed_args.hand_prefix)
     rospy.sleep(0.5)  # Wait for connections.
 
-    client.command_hand_configuration('ready')
+    client.command_hand_configuration('home')
 
     wave_fingers(client, finger_indices=[0, 1], num_seconds=5)
-    client.command_hand_configuration('ready')
+    client.command_hand_configuration('home')
 
+    # Named hand configurations are those which can be called directly with a
+    # name.
     command_named_configurations(client)
 
     # Get the hand joint positions.
