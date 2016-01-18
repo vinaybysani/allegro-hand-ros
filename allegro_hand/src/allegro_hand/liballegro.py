@@ -108,7 +108,7 @@ class AllegroClient(object):
         try:
             msg.position = desired_pose
             self.pub_joint.publish(msg)
-            rospy.loginfo('Published desired pose.')
+            rospy.logdebug('Published desired pose.')
             return True
         except rospy.exceptions.ROSSerializationException:
             rospy.logwarn('Incorrect type for desired pose: {}.'.format(
