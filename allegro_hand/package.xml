@@ -9,13 +9,12 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
   <run_depend>allegro_hand_driver</run_depend>
   <run_depend>allegro_hand_controllers</run_depend>
   <run_depend>allegro_hand_description</run_depend>
   <run_depend>allegro_hand_keyboard</run_depend>
 
-  <!-- This is a meta-package. -->
   <export>
-    <metapackage/>
   </export>
 </package>
