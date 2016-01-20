@@ -14,4 +14,4 @@ catkin_package(
 ## Add folders to be run by python nosetests
 if(CATKIN_ENABLE_TESTING)
   catkin_add_nosetests(src/allegro_hand)
-endif(CATKIN_ENABLE_TESTING)
+endif()
