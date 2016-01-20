@@ -5,9 +5,9 @@ project(allegro_hand_driver)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  libpcan
   roscpp
   std_msgs
-  libpcan
 )
 
 ###################################
@@ -17,7 +17,10 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES allegro_hand_driver
-  CATKIN_DEPENDS roscpp std_msgs libpcan
+  CATKIN_DEPENDS
+  libpcan
+  roscpp
+  std_msgs
 #  DEPENDS system_lib
 )
 

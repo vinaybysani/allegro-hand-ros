@@ -7,12 +7,12 @@ set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  allegro_hand_driver
+  bhand
   libpcan
   roscpp
   sensor_msgs
-  allegro_hand_driver
-  bhand
-  roslaunch
+# roslaunch  # Disabled due to testing
 )
 
 ###################################
@@ -22,7 +22,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES allegro_hand_controllers
   CATKIN_DEPENDS allegro_hand_driver bhand libpcan roscpp sensor_msgs
-  DEPENDS system_lib
+#  DEPENDS
 )
 
 ###########
@@ -55,7 +55,12 @@ target_link_libraries(allegro_node_torque allegro_node ${catkin_LIBRARIES})
 ## Install ##
 #############
 
-install(TARGETS allegro_node_grasp allegro_node_pd allegro_node_velsat
+install(TARGETS
+  allegro_node
+  allegro_node_grasp
+  allegro_node_pd
+  allegro_node_torque
+  allegro_node_velsat
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
