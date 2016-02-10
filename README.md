@@ -9,7 +9,8 @@ It improves significantly upon the SimLab version by providing a catkin-ized
 version, simplifies the launch file structure, updates the package/node names to
 have a more consistent structure, improves the build process by creating a
 common driver, introduces an AllegroNode C++ class that reduces the amount of
-duplicated code.
+duplicated code. It also provides a python library that can control the hand
+directly.
 
 It also provides the BHand library directly in this package (including both
 32-bit and 64-bit versions, though 32-bit systems will need to update the
