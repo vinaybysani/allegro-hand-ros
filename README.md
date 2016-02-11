@@ -166,3 +166,13 @@ If you do not see any available files, you may need to run:
 
 from the downloaded pcan folder: this theoretically creates the devices files if
 the system has not done it automatically.
+
+
+Gazebo alpha support
+--------------------
+
+Gazebo is supported in theory, thanks to inertial parameters from @trhermans.
+However, I have not been successful at running a physical simulation of the robot hand.
+I am leaving the gazebo option for others to experiment; to try it out, pass GAZEBO:=true to the launch file.
+
+Contributions (pull requests) to fix the simulation are welcome.
