@@ -8,6 +8,7 @@
   <arg name="ZEROS" default="$(find allegro_hand_parameters)/zero_files/zero_SAH020BL016.yaml" />
   <arg name="AUTO_CAN" default="true" />  <!--If true, ignores CAN_DEVICE. -->
   <arg name="CAN_DEVICE" default="/dev/pcanusb1" />
+  <arg name="SIM" default="false" />
 
   <include file="$(find allegro_hand_controllers)/launch/allegro_hand.launch">
     <arg name="HAND" value="$(arg HAND)"/>
@@ -18,6 +19,7 @@
     <arg name="ZEROS" value="$(arg ZEROS)"/>
     <arg name="AUTO_CAN" value="$(arg AUTO_CAN)"/>
     <arg name="CAN_DEVICE" value="$(arg CAN_DEVICE)"/>
+    <arg name="SIM" value="$(arg SIM)"/>
   </include>
 
 </launch>
