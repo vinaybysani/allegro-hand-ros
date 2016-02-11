@@ -11,6 +11,7 @@
           AUTO_CAN:=true|false  (if true, ignores CAN_DEVICE argument and finds the can device automagically).
           CAN_DEVICE:=/dev/pcanusb1 | /dev/pcanusbNNN  (ls -l /dev/pcan* to see open CAN devices)
           VISUALIZE:=true|false  (Launch rviz)
+          SIM:=true|false  (use a joint_state_publisher instead of the actual robot)
 
        This script launches the following nodes:
          - allegro hand controller (different controllers exist)
@@ -28,6 +29,7 @@
        as an input for both the robot_description and for the grasping library controllers. -->
   <arg name="HAND"/>
   <arg name="NUM" default='0'/>
+  <arg name="SIM" default='false'/>
 
   <!-- Visualization with rviz, only if arg VISUALIZE is set to true. Default is
        false, the allegro_viz.launch can be started separated. -->
@@ -70,7 +72,8 @@
          command="$(find xacro)/xacro.py
                   $(find allegro_hand_description)/allegro_hand_description_$(arg HAND).xacro"/>
 
-  <!-- Allegro Hand controller and communication node -->
+  <!-- Allegro Hand controller and communication node. Only if SIM is false
+       (otherwise use the joint_state_publisher. -->
   <node name="allegroHand_$(arg HAND)_$(arg NUM)"
         pkg="allegro_hand_controllers"
         type="allegro_node_$(arg CONTROLLER)"
@@ -78,7 +81,8 @@
         clear_params="true"
         respawn="$(arg RESPAWN)"
         respawn_delay="2"
-        args="$(arg POLLING)" >
+        args="$(arg POLLING)"
+        unless="$(arg SIM)" >
 
     <!-- Remapping of topics into enumerated allegroHand_# namespace -->
     <remap from="/allegroHand/joint_states" to="/allegroHand_$(arg NUM)/joint_states"/>
@@ -107,6 +111,12 @@
            if="$(arg AUTO_CAN)" />
 
     <param name="/hand_info/which_hand" value="$(arg HAND)" /> <!-- See HAND arg above -->
+  </node>
+
+  <node name="joint_states_$(arg NUM)" pkg="joint_state_publisher" type="joint_state_publisher"
+        if="$(arg SIM)">
+    <remap from="/joint_states" to="/allegroHand_$(arg NUM)/joint_states"/>
+    <param name="use_gui" value="true"/>
   </node>
 
   <!-- Joint States (angles) to Joint Transforms -->

@@ -49,6 +49,7 @@ Optional (recommended) arguments:
           AUTO_CAN:=true|false  (default is true)
           CAN_DEVICE:=/dev/pcanusb1 | /dev/pcanusbNNN  (ls -l /dev/pcan* to see open CAN devices)
           VISUALIZE:=true|false  (Launch rviz)
+          SIM:=true|false  (use a joint_state_publisher instead of the actual robot)
 
 Note on `AUTO_CAN`: There is a nice script `detect_pcan.py` which automatically
 finds an open `/dev/pcanusb` file. If instead you specify the can device
