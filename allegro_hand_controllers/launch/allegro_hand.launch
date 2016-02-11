@@ -12,6 +12,7 @@
           CAN_DEVICE:=/dev/pcanusb1 | /dev/pcanusbNNN  (ls -l /dev/pcan* to see open CAN devices)
           VISUALIZE:=true|false  (Launch rviz)
           SIM:=true|false  (use a joint_state_publisher instead of the actual robot)
+          GAZEBO:=true|false  (NOTE: Gazebo support is highly experimental at this point)
 
        This script launches the following nodes:
          - allegro hand controller (different controllers exist)
@@ -30,6 +31,7 @@
   <arg name="HAND"/>
   <arg name="NUM" default='0'/>
   <arg name="SIM" default='false'/>
+  <arg name="GAZEBO" default='false'/>
 
   <!-- Visualization with rviz, only if arg VISUALIZE is set to true. Default is
        false, the allegro_viz.launch can be started separated. -->
@@ -135,5 +137,21 @@
         if="$(arg KEYBOARD)">
     <remap from="/allegroHand/lib_cmd" to="/allegroHand_$(arg NUM)/lib_cmd"/>
   </node>
+
+
+  <!-- Gazebo support is very experimental at the moment. -->
+
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch"
+           if="$(arg GAZEBO)">
+    <arg name="world_name" value="$(find allegro_hand_description)/worlds/allegro.world"/>
+    <arg name="debug" value="true" />
+    <arg name="paused" value="true"/>
+  </include>
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-urdf -model rrbot -param robot_description"
+        if="$(arg GAZEBO)" />
 
 </launch>
