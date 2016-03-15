@@ -20,6 +20,7 @@ class controlAllegroHand;
 
 // Topic names.
 const std::string JOINT_STATE_TOPIC = "/allegroHand/joint_states";
+const std::string DESIRED_STATE_TOPIC = "/allegroHand/joint_cmd";
 
 
 class AllegroNode {
@@ -30,6 +31,8 @@ class AllegroNode {
   virtual ~AllegroNode();
 
   void publishData();
+
+  void desiredStateCallback(const sensor_msgs::JointState &desired);
 
   void updateWriteReadCAN();
 
@@ -46,7 +49,7 @@ class AllegroNode {
   void timerCallback(const ros::TimerEvent &event);
 
  protected:
-  // Variables
+
   double current_position[DOF_JOINTS] = {0.0};
   double previous_position[DOF_JOINTS] = {0.0};
 
@@ -57,19 +60,18 @@ class AllegroNode {
   double previous_velocity[DOF_JOINTS] = {0.0};
   double current_velocity_filtered[DOF_JOINTS] = {0.0};
 
-  double desired_position[DOF_JOINTS] = {0.0};
   double desired_torque[DOF_JOINTS] = {0.0};
 
   std::string whichHand;  // Right or left hand.
 
   // ROS stuff
   ros::NodeHandle nh;
-
-  // Publishes joint states.
   ros::Publisher joint_state_pub;
+  ros::Subscriber joint_cmd_sub_;
 
-  // Store the current joint message.
-  sensor_msgs::JointState msgJoint;
+  // Store the current and desired joint states.
+  sensor_msgs::JointState current_joint_state;
+  sensor_msgs::JointState desired_joint_state_;
 
   // ROS Time
   ros::Time tstart;
