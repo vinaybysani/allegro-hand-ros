@@ -254,7 +254,7 @@ void AllegroNodeVelSat::initController() {
 }
 
 void AllegroNodeVelSat::publishData() {
-  // Superclass publishes the msgJoint data.
+  // Superclass publishes the current_joint_state data.
   AllegroNode::publishData();
 
   // Additionally, publish the msgJoint_desired and msgJoint_current data.

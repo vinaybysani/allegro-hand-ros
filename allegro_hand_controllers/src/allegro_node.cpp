@@ -20,15 +20,15 @@ AllegroNode::AllegroNode() {
   mutex = new boost::mutex();
 
   // Create arrays 16 long for each of the four joint state components
-  msgJoint.position.resize(DOF_JOINTS);
-  msgJoint.velocity.resize(DOF_JOINTS);
-  msgJoint.effort.resize(DOF_JOINTS);
-  msgJoint.name.resize(DOF_JOINTS);
+  current_joint_state.position.resize(DOF_JOINTS);
+  current_joint_state.velocity.resize(DOF_JOINTS);
+  current_joint_state.effort.resize(DOF_JOINTS);
+  current_joint_state.name.resize(DOF_JOINTS);
 
   // Initialize values: joint names should match URDF, desired torque and
   // velocity are both zero.
   for (int i = 0; i < DOF_JOINTS; i++) {
-    msgJoint.name[i] = jointNames[i];
+    current_joint_state.name[i] = jointNames[i];
     desired_torque[i] = 0.0;
     current_velocity[i] = 0.0;
   }
@@ -53,8 +53,11 @@ AllegroNode::AllegroNode() {
   // Start ROS time
   tstart = ros::Time::now();
 
-  // Advertise joint states.
+  // Advertise current joint state publisher and subscribe to desired joint
+  // states.
   joint_state_pub = nh.advertise<sensor_msgs::JointState>(JOINT_STATE_TOPIC, 3);
+  joint_cmd_sub_ = nh.subscribe(DESIRED_STATE_TOPIC, 1, // queue size
+                                &AllegroNode::desiredStateCallback, this);
 }
 
 AllegroNode::~AllegroNode() {
@@ -63,15 +66,21 @@ AllegroNode::~AllegroNode() {
   nh.shutdown();
 }
 
+void AllegroNode::desiredStateCallback(const sensor_msgs::JointState &msg) {
+  mutex->lock();
+  desired_joint_state_ = msg;
+  mutex->unlock();
+}
+
 void AllegroNode::publishData() {
   // current position, velocity and effort (torque) published
-  msgJoint.header.stamp = tnow;
+  current_joint_state.header.stamp = tnow;
   for (int i = 0; i < DOF_JOINTS; i++) {
-    msgJoint.position[i] = current_position_filtered[i];
-    msgJoint.velocity[i] = current_velocity_filtered[i];
-    msgJoint.effort[i] = desired_torque[i];
+    current_joint_state.position[i] = current_position_filtered[i];
+    current_joint_state.velocity[i] = current_velocity_filtered[i];
+    current_joint_state.effort[i] = desired_torque[i];
   }
-  joint_state_pub.publish(msgJoint);
+  joint_state_pub.publish(current_joint_state);
 }
 
 void AllegroNode::updateWriteReadCAN() {
@@ -124,8 +133,7 @@ void AllegroNode::updateController() {
 
 
 // Interrupt-based control is not recommended by SimLab. I have not tested it.
-void AllegroNode::timerCallback(const ros::TimerEvent& event)
-{
+void AllegroNode::timerCallback(const ros::TimerEvent &event) {
   updateController();
 }
 

@@ -52,9 +52,10 @@ class AllegroNodeGrasp : public AllegroNode {
 
     ros::Subscriber envelop_torque_sub;
 
-
     // Initialize BHand
     BHand *pBHand = NULL;
+
+  double desired_position[DOF_JOINTS] = {0.0};
 };
 
 #endif //PROJECT_ALLEGRO_NODE_GRASP_H
