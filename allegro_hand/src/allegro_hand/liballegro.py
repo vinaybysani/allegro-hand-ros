@@ -115,6 +115,38 @@ class AllegroClient(object):
                 desired_pose))
             return False
 
+    def command_joint_torques(self, desired_torques):
+        """
+        Command a desired torque for each joint.
+
+        The desired torque must be the correct dimensionality (self._num_joints).
+
+        :param desired_torques: The desired joint torques.
+        :return: True if message is published, False otherwise.
+        """
+
+        # Check that the desired torque vector can have len() applied to it, and
+        # that the number of dimensions is the same as the number of
+        # joints. This prevents passing singletons or incorrectly-shaped lists
+        # to the message creation (which does no checking).
+        if (not hasattr(desired_torques, '__len__') or
+                len(desired_torques) != self._num_joints):
+            rospy.logwarn('Desired torques must be a {}-d array: got {}.'
+                          .format(self._num_joints, desired_torques))
+            return False
+
+        msg = JointState()  # Create and publish
+        try:
+            msg.effort = desired_torques
+            self.pub_joint.publish(msg)
+            rospy.logdebug('Published desired torques.')
+            return True
+        except rospy.exceptions.ROSSerializationException:
+            rospy.logwarn('Incorrect type for desired torques: {}.'.format(
+                desired_torques))
+            return False
+
+
     def poll_joint_position(self, wait=False):
         """ Get the current joint positions of the hand.
 
