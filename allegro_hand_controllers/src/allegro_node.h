@@ -25,64 +25,64 @@ const std::string JOINT_STATE_TOPIC = "/allegroHand/joint_states";
 class AllegroNode {
  public:
 
-    AllegroNode();
+  AllegroNode();
 
-    virtual ~AllegroNode();
+  virtual ~AllegroNode();
 
-    void publishData();
+  void publishData();
 
-    void updateWriteReadCAN();
+  void updateWriteReadCAN();
 
-    void updateController();
+  void updateController();
 
-    // This is the main method that must be implemented by the various
-    // controller nodes.
-    virtual void computeDesiredTorque() {
-      ROS_ERROR("Called virtual function!");
-    };
+  // This is the main method that must be implemented by the various
+  // controller nodes.
+  virtual void computeDesiredTorque() {
+    ROS_ERROR("Called virtual function!");
+  };
 
-    ros::Timer startTimerCallback();
+  ros::Timer startTimerCallback();
 
-    void timerCallback(const ros::TimerEvent &event);
+  void timerCallback(const ros::TimerEvent &event);
 
  protected:
-    // Variables
-    double current_position[DOF_JOINTS] = {0.0};
-    double previous_position[DOF_JOINTS] = {0.0};
+  // Variables
+  double current_position[DOF_JOINTS] = {0.0};
+  double previous_position[DOF_JOINTS] = {0.0};
 
-    double current_position_filtered[DOF_JOINTS] = {0.0};
-    double previous_position_filtered[DOF_JOINTS] = {0.0};
+  double current_position_filtered[DOF_JOINTS] = {0.0};
+  double previous_position_filtered[DOF_JOINTS] = {0.0};
 
-    double current_velocity[DOF_JOINTS] = {0.0};
-    double previous_velocity[DOF_JOINTS] = {0.0};
-    double current_velocity_filtered[DOF_JOINTS] = {0.0};
+  double current_velocity[DOF_JOINTS] = {0.0};
+  double previous_velocity[DOF_JOINTS] = {0.0};
+  double current_velocity_filtered[DOF_JOINTS] = {0.0};
 
-    double desired_position[DOF_JOINTS] = {0.0};
-    double desired_torque[DOF_JOINTS] = {0.0};
+  double desired_position[DOF_JOINTS] = {0.0};
+  double desired_torque[DOF_JOINTS] = {0.0};
 
-    std::string whichHand;  // Right or left hand.
+  std::string whichHand;  // Right or left hand.
 
-    // ROS stuff
-    ros::NodeHandle nh;
+  // ROS stuff
+  ros::NodeHandle nh;
 
-    // Publishes joint states.
-    ros::Publisher joint_state_pub;
+  // Publishes joint states.
+  ros::Publisher joint_state_pub;
 
-    // Store the current joint message.
-    sensor_msgs::JointState msgJoint;
+  // Store the current joint message.
+  sensor_msgs::JointState msgJoint;
 
-    // ROS Time
-    ros::Time tstart;
-    ros::Time tnow;
-    double dt;
+  // ROS Time
+  ros::Time tstart;
+  ros::Time tnow;
+  double dt;
 
-    // CAN device
-    controlAllegroHand *canDevice;
-    boost::mutex *mutex;
+  // CAN device
+  controlAllegroHand *canDevice;
+  boost::mutex *mutex;
 
-    // Flags
-    int lEmergencyStop = 0;
-    long frame = 0;
+  // Flags
+  int lEmergencyStop = 0;
+  long frame = 0;
 };
 
 #endif //PROJECT_ALLEGRO_NODE_COMMON_H
