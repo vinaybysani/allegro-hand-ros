@@ -10,9 +10,10 @@ class AllegroClient(object):
     def __init__(self, hand_topic_prefix='/allegroHand', num_joints=16):
         """ Simple python interface to the Allegro Hand.
 
-        The AllegroClient is a simple python interface to an allegro robot hand.
-        It enables you to command the hand directly through python library
-        calls.
+        The AllegroClient is a simple python interface to an allegro
+        robot hand.  It enables you to command the hand directly through
+        python library calls (joint positions, joint torques, or 'named'
+        grasps).
 
         The constructors sets up publishers and subscribes to the joint states
         topic for the hand.
@@ -25,10 +26,12 @@ class AllegroClient(object):
              (/allegroHand/joint_cmd:=/allegroHand_0/joint_cmd)
         The first method is probably easier.
 
-        :param hand_topic_prefix: The prefix to use for *all* hand topics
-        (publishing & subscribing).
-        :param num_joints: Number of expected joints, used when commanding joint
-        positions.
+        :param hand_topic_prefix: The prefix to use for *all* hand
+        topics (publishing & subscribing).
+
+        :param num_joints: Number of expected joints, used when
+        commanding joint positions.
+
         """
 
         # Topics (that can be remapped) for named graps
@@ -119,14 +122,16 @@ class AllegroClient(object):
         """
         Command a desired torque for each joint.
 
-        The desired torque must be the correct dimensionality (self._num_joints).
+        The desired torque must be the correct dimensionality
+        (self._num_joints). Similarly to poses, we do not sanity-check
+        the inputs. As a rule of thumb, values between +- 0.5 are fine.
 
         :param desired_torques: The desired joint torques.
         :return: True if message is published, False otherwise.
         """
 
-        # Check that the desired torque vector can have len() applied to it, and
-        # that the number of dimensions is the same as the number of
+        # Check that the desired torque vector can have len() applied to it,
+        # and that the number of dimensions is the same as the number of
         # joints. This prevents passing singletons or incorrectly-shaped lists
         # to the message creation (which does no checking).
         if (not hasattr(desired_torques, '__len__') or
@@ -145,7 +150,6 @@ class AllegroClient(object):
             rospy.logwarn('Incorrect type for desired torques: {}.'.format(
                 desired_torques))
             return False
-
 
     def poll_joint_position(self, wait=False):
         """ Get the current joint positions of the hand.

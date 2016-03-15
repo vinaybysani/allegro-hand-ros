@@ -33,8 +33,10 @@ def wave_fingers(allegro_client,
     if not finger_indices:
         finger_indices = [0, 1, 2, 3]
 
-    # The default pose is 1.0, except for the first joint of each finger (the
-    # finger rotation along its axis) which is 0.0.
+    # Later we will only change the desired position for the 'active' fingers,
+    # so this sets the default pose for *all* fingers. This is set to the value
+    # 1.0, except for the first joint of each finger (the finger rotation along
+    # its pointing axis) which is 0.0.
     position = np.ones(16)
     position[[0, 4, 8, 12]] = 0.0
 
@@ -52,6 +54,45 @@ def wave_fingers(allegro_client,
 
         r.sleep()
         pass
+    return
+
+
+def command_desired_torques(allegro_client,
+                            finger_indices=None,
+                            num_seconds=10):
+    hz = 4
+    r = rospy.Rate(hz)
+
+    # Choose which fingers to torque control, by default do only the index.
+    if not finger_indices:
+        finger_indices = [0]
+
+    # Set the default torques to all zeros. We will vary the second joint of
+    # each finger.
+    torques = np.zeros(16)
+
+    for t in range(hz * num_seconds):
+
+        # Generate a sinusoidal signal between 0 and 1.5
+        val = (np.sin(0.2 * t)) * 0.5
+
+        print('Setting torques to {:.2f}'.format(val))
+
+        # Set all torques for the joints we are controlling.
+        for finger_idx in finger_indices:
+            inds = range(4*finger_idx + 1, 4*finger_idx + 4)
+            torques[inds] = val
+
+        # Command the joint position.
+        allegro_client.command_joint_torques(torques)
+
+        r.sleep()
+        pass
+
+    # Make sure we set torques back to zero.
+    print('Setting torques to 0')
+    torques = np.zeros(16)
+    allegro_client.command_joint_torques(torques)
     return
 
 
@@ -93,6 +134,10 @@ def run(args):
 
     rospy.loginfo('== Waving fingers... ==')
     wave_fingers(client, finger_indices=[0, 1], num_seconds=5)
+
+    rospy.loginfo('== Commanding torques on the fingers... ==')
+    command_desired_torques(client, finger_indices = [0, 1], num_seconds=3)
+
     client.command_hand_configuration('home')
 
     # Named hand configurations are those which can be called directly with a
@@ -107,7 +152,6 @@ def run(args):
     joints = client.poll_joint_position(wait=True)
     rospy.loginfo('Hand configuration (fresh): {}'.format(joints))
 
-    return
 
 if __name__ == '__main__':
     args = sys.argv[1:]
