@@ -78,9 +78,9 @@ std::string initialPosition[DOF_JOINTS] =
                 "~initial_position/j33"
         };
 
-// Constructor: subscribe to topics.
+// Constructor subscribes to topics.
 AllegroNodePD::AllegroNodePD()
-        : AllegroNode() {  // Call super constructor.
+        : AllegroNode() {
 
   initController(whichHand);
 
