@@ -7,7 +7,6 @@ using namespace std;
 #include "allegro_hand_driver/controlAllegroHand.h"
 
 // Topics
-const std::string JOINT_CMD_TOPIC = "/allegroHand/joint_cmd";
 const std::string LIB_CMD_TOPIC = "/allegroHand/lib_cmd";
 
 #define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
@@ -81,28 +80,16 @@ std::string initialPosition[DOF_JOINTS] =
 // Constructor subscribes to topics.
 AllegroNodePD::AllegroNodePD()
         : AllegroNode() {
+  control_hand_ = false;
 
   initController(whichHand);
 
-  joint_cmd_sub = nh.subscribe(
-          JOINT_CMD_TOPIC, 3, &AllegroNodePD::setJointCallback, this);
   lib_cmd_sub = nh.subscribe(
           LIB_CMD_TOPIC, 1, &AllegroNodePD::libCmdCallback, this);
 }
 
 AllegroNodePD::~AllegroNodePD() {
   ROS_INFO("PD controller node is shutting down");
-}
-
-// Called when a desired joint position message is received
-void AllegroNodePD::setJointCallback(const sensor_msgs::JointState &msg) {
-  mutex->lock();
-
-  for (int i = 0; i < DOF_JOINTS; i++)
-    desired_position[i] = msg.position[i];
-
-  mutex->unlock();
-  controlPD = true;
 }
 
 // Called when an external (string) message is received
@@ -112,34 +99,73 @@ void AllegroNodePD::libCmdCallback(const std_msgs::String::ConstPtr &msg) {
   const std::string lib_cmd = msg->data.c_str();
 
   // Compare the message received to an expected input
-  if (lib_cmd.compare("pdControl") == 0)
-    controlPD = true;
+  if (lib_cmd.compare("pdControl") == 0) {
+    control_hand_ = true;
+  }
 
   else if (lib_cmd.compare("home") == 0) {
+    // Set the home position as the desired joint states.
+    mutex->lock();
     for (int i = 0; i < DOF_JOINTS; i++)
-      desired_position[i] = DEGREES_TO_RADIANS(home_pose[i]);
-    controlPD = true;
+      desired_joint_state_.position[i] = DEGREES_TO_RADIANS(home_pose[i]);
+    control_hand_ = true;
+    mutex->unlock();
   }
-  else if (lib_cmd.compare("off") == 0)
-    controlPD = false;
+  else if (lib_cmd.compare("off") == 0) {
+    control_hand_ = false;
+  }
 
-  else if (lib_cmd.compare("save") == 0)
+  else if (lib_cmd.compare("save") == 0) {
+    // Set the current position as the desired joint states.
+    mutex->lock();
     for (int i = 0; i < DOF_JOINTS; i++)
-      desired_position[i] = current_position[i];
+      desired_joint_state_.position[i] = current_position[i];
+    mutex->unlock();
+  }
 }
 
 void AllegroNodePD::computeDesiredTorque() {
-  // Position PD control for the desired joint configurations.
-  if (controlPD) {
+  // NOTE: here we just compute and set the desired_torque class member
+  // variable. AllegroNode::updateWriteReadCAN() will send the desired torque to
+  // the hand.
+
+  // No control: set torques to zero.
+  if (!control_hand_) {
+    //ROS_INFO_THROTTLE(1.0, "Hand control is false");
     for (int i = 0; i < DOF_JOINTS; i++) {
-      desired_torque[i] =
-              k_p[i] * (desired_position[i] - current_position_filtered[i])
-              - k_d[i] * current_velocity_filtered[i];
-      desired_torque[i] = desired_torque[i] / canDevice->torqueConversion();
-    }
-  } else {
-    for (int i = 0; i < DOF_JOINTS; i++)
       desired_torque[i] = 0.0;
+    }
+    return;
+  }
+
+  // Sanity/defensive check: if *both* position and torques are set in the
+  // message, do nothing.
+  if (desired_joint_state_.position.size() > 0 &&
+      desired_joint_state_.effort.size() > 0) {
+    ROS_WARN("Error: both positions and torques are specified in the desired "
+                     "state. You cannot control both at the same time.");
+    return;
+  }
+
+  {
+    mutex->lock();
+
+    if (desired_joint_state_.position.size() == DOF_JOINTS) {
+      // Control joint positions: compute the desired torques (PD control).
+      double error;
+      for (int i = 0; i < DOF_JOINTS; i++) {
+        error = desired_joint_state_.position[i] - current_position_filtered[i];
+        desired_torque[i] = 1.0/canDevice->torqueConversion() *
+                (k_p[i] * error - k_d[i] * current_velocity_filtered[i]);
+      }
+    } else if (desired_joint_state_.effort.size() > 0) {
+      // Control joint torques: set desired torques as the value stored in the
+      // desired_joint_state message.
+      for (int i = 0; i < DOF_JOINTS; i++) {
+        desired_torque[i] = desired_joint_state_.effort[i];
+      }
+    }
+    mutex->unlock();
   }
 }
 
@@ -162,21 +188,28 @@ void AllegroNodePD::initController(const std::string &whichHand) {
   // set initial position via initial_position.yaml or to default values
   if (ros::param::has("~initial_position")) {
     ROS_INFO("CTRL: Initial Pose loaded from param server.");
+    double tmp;
+    mutex->lock();
+    desired_joint_state_.position.resize(DOF_JOINTS);
     for (int i = 0; i < DOF_JOINTS; i++) {
-      ros::param::get(initialPosition[i], desired_position[i]);
-      desired_position[i] = DEGREES_TO_RADIANS(desired_position[i]);
+      ros::param::get(initialPosition[i], tmp);
+      desired_joint_state_.position[i] = DEGREES_TO_RADIANS(tmp);
     }
+    mutex->unlock();
   }
   else {
-    ROS_WARN("CTRL: Initial postion not loaded.");
+    ROS_WARN("CTRL: Initial position not loaded.");
     ROS_WARN("Check launch file is loading /parameters/initial_position.yaml");
     ROS_WARN("Loading Home position instead...");
 
     // Home position
+    mutex->lock();
+    desired_joint_state_.position.resize(DOF_JOINTS);
     for (int i = 0; i < DOF_JOINTS; i++)
-      desired_position[i] = DEGREES_TO_RADIANS(home_pose[i]);
+      desired_joint_state_.position[i] = DEGREES_TO_RADIANS(home_pose[i]);
+    mutex->unlock();
   }
-  controlPD = false;
+  control_hand_ = false;
 
   printf("*************************************\n");
   printf("      Joint PD Control Method        \n");
