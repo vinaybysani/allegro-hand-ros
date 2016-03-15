@@ -150,7 +150,7 @@ class AllegroClient(object):
         if hand_config in self._named_grasps_mappings:
             # Look up conversion of string -> msg
             msg = String(self._named_grasps_mappings[hand_config])
-            rospy.loginfo('Commanding grasp: {}'.format(msg))
+            rospy.logdebug('Commanding grasp: {}'.format(msg.data))
             self.pub_grasp.publish(msg)
             return True
         else:

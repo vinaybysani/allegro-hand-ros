@@ -88,20 +88,24 @@ def run(args):
     client = AllegroClient(hand_topic_prefix=parsed_args.hand_prefix)
     rospy.sleep(0.5)  # Wait for connections.
 
+    rospy.loginfo('== Commanding hand configuration: home... ==')
     client.command_hand_configuration('home')
 
+    rospy.loginfo('== Waving fingers... ==')
     wave_fingers(client, finger_indices=[0, 1], num_seconds=5)
     client.command_hand_configuration('home')
 
     # Named hand configurations are those which can be called directly with a
     # name.
+    rospy.loginfo('== Going through several named grasp configs... ==')
     command_named_configurations(client)
 
     # Get the hand joint positions.
+    rospy.loginfo('== Reading joint positions... ==')
     joints = client.poll_joint_position(wait=False)
-    rospy.loginfo('Hand configuration: {}'.format(joints))
+    rospy.loginfo('Hand configuration (poll): {}'.format(joints))
     joints = client.poll_joint_position(wait=True)
-    rospy.loginfo('Hand configuration: {}'.format(joints))
+    rospy.loginfo('Hand configuration (fresh): {}'.format(joints))
 
     return
 
