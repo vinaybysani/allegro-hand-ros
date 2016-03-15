@@ -101,3 +101,30 @@ class TestAllegro(unittest.TestCase):
     def test_topic_prefix(self):
         client = AllegroClient(hand_topic_prefix='/Prefix')
         self.assertEqual('/Prefix/lib_cmd', client.pub_grasp.name)
+
+    def test_command_torques(self):
+        des_torques = [0.123] * 16
+        ret = self.client.command_joint_torques(des_torques)
+        self.assertTrue(ret)
+        self.assertEqual(1, self.client.pub_joint._pub_count)
+        published_state = self.client.pub_joint._last_published
+
+        ref_state = JointState()
+        ref_state.effort = des_torques
+        self.assertEqual(ref_state, published_state)
+
+    def test_command_torques_wrong_dimensions(self):
+        des_torques = [0.123] * 2  # Should be 16-dim
+        ret = self.client.command_joint_torques(des_torques)
+        self.assertFalse(ret)
+        self.assertEqual(0, self.client.pub_joint._pub_count)
+        published_state = self.client.pub_joint._last_published
+        self.assertIsNone(published_state)
+
+    def test_command_torques_int_not_array(self):
+        des_torques = 0.123  # Not even an iterable array.
+        ret = self.client.command_joint_torques(des_torques)
+        self.assertFalse(ret)
+        self.assertEqual(0, self.client.pub_joint._pub_count)
+        published_state = self.client.pub_joint._last_published
+        self.assertIsNone(published_state)
