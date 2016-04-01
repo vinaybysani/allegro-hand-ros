@@ -83,6 +83,16 @@ class AllegroClient(object):
             'gravity': 'gravcomp'
             }
 
+    def disconnect(self):
+        """
+        Disconnect the allegro client from the hand by sending the 'off'
+        command. This is principally a convenience binding.
+
+        Note that we don't actually 'disconnect', so you could technically
+        continue sending other commands after this.
+        """
+        self.command_hand_configuration('off')
+
     def _joint_state_callback(self, data):
         self._joint_state = data
 

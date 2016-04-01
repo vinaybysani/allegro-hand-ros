@@ -35,6 +35,7 @@ class TestAllegro(unittest.TestCase):
         ret = self.client.command_hand_configuration('envelop')
         self.assertEqual(True, ret)
         self.assertEqual(1, self.client.pub_grasp._pub_count)
+        self.assertEqual('envelop', self.client.pub_grasp._last_published.data)
 
     def test_send_invalid_hand_config(self):
         ret = self.client.command_hand_configuration('garbage')
@@ -128,3 +129,9 @@ class TestAllegro(unittest.TestCase):
         self.assertEqual(0, self.client.pub_joint._pub_count)
         published_state = self.client.pub_joint._last_published
         self.assertIsNone(published_state)
+
+    def test_disconnect(self):
+        self.client.disconnect()
+        self.assertEqual(1, self.client.pub_grasp._pub_count)
+        self.assertEqual('off', self.client.pub_grasp._last_published.data)
+
