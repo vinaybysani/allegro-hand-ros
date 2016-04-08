@@ -2,19 +2,18 @@
 <package>
     <name>allegro_hand_description</name>
     <version>0.0.0</version>
-    <description>Hand models for RVIZ and Gazebo.</description>
+    <description>Allegro hand models.</description>
 
     <!-- One maintainer tag required, multiple allowed, one person per tag -->
-    <maintainer email="todo@todo.todo">TODO</maintainer>
+    <maintainer email="felix.duvallet@epfl.ch">Felix Duvallet</maintainer>
+
+    <buildtool_depend>catkin</buildtool_depend>
 
     <!-- One license tag required, multiple allowed, one license per tag -->
     <!-- Commonly used license strings: -->
     <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
     <license>TODO</license>
     <!-- The export tag contains other, unspecified, tags -->
-
-    <run_depend>xacro</run_depend>
-
     <export>
         <!-- Other tools can request additional information be placed here -->
 
