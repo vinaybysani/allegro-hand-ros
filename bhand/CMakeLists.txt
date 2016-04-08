@@ -37,7 +37,7 @@ set_target_properties(BHand PROPERTIES LINKER_LANGUAGE CXX)
 #############
 
 ## Mark header files for installation
-install(DIRECTORY include/BHand
+install(DIRECTORY include/bhand/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
 )
