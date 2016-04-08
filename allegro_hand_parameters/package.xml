@@ -2,10 +2,12 @@
 <package>
     <name>allegro_hand_parameters</name>
     <version>0.0.0</version>
-    <description>The allegro_hand_parameters package</description>
+    <description>parameters: calibration zeros, controller parameters</description>
 
     <!-- One maintainer tag required, multiple allowed, one person per tag -->
-    <maintainer email="todo@todo.todo">TODO</maintainer>
+    <maintainer email="felix.duvallet@epfl.ch">Felix Duvallet</maintainer>
+
+    <buildtool_depend>catkin</buildtool_depend>
 
     <!-- One license tag required, multiple allowed, one license per tag -->
     <!-- Commonly used license strings: -->
