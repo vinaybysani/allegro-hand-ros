@@ -1,6 +1,6 @@
 #include "allegro_node_grasp.h"
 
-#include "BHand/BHand.h"
+#include "bhand/BHand.h"
 #include "allegro_hand_driver/controlAllegroHand.h"
 
 // Topics
