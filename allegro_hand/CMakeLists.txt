@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(allegro_hand)
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS rostest)
 catkin_python_setup()
 
 catkin_package(
@@ -14,4 +14,5 @@ catkin_package(
 ## Add folders to be run by python nosetests
 if(CATKIN_ENABLE_TESTING)
   catkin_add_nosetests(src/allegro_hand)
+  add_rostest(test/allegro_launch.test)
 endif()
