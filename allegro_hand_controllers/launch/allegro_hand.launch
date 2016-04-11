@@ -29,9 +29,12 @@
        Which hand (left/right) must now be specified as an argument when launching the Allegro Hand
        as an input for both the robot_description and for the grasping library controllers. -->
   <arg name="HAND"/>
-  <arg name="NUM" default='0'/>
-  <arg name="SIM" default='false'/>
-  <arg name="GAZEBO" default='false'/>
+  <arg name="NUM" default="0"/>
+  <arg name="SIM" default="false"/>
+  <arg name="GAZEBO" default="false"/>
+
+  <!-- Show the GUI in the joint_state_publisher -->
+  <arg name="JSP_GUI" default="true"/>
 
   <!-- Visualization with rviz, only if arg VISUALIZE is set to true. Default is
        false, the allegro_viz.launch can be started separated. -->
@@ -118,7 +121,7 @@
   <node name="joint_states_$(arg NUM)" pkg="joint_state_publisher" type="joint_state_publisher"
         if="$(arg SIM)">
     <remap from="/joint_states" to="/allegroHand_$(arg NUM)/joint_states"/>
-    <param name="use_gui" value="true"/>
+    <param name="use_gui" value="$(arg JSP_GUI)"/>
   </node>
 
   <!-- Joint States (angles) to Joint Transforms -->

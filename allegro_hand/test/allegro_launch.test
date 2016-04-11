@@ -12,6 +12,7 @@
     <arg name="CAN_DEVICE" value="none"/>
     <arg name="SIM" value="true"/>
     <arg name="GAZEBO" value="false"/>
+    <arg name="JSP_GUI" value="false" />
   </include>
 
   <!-- Start the python unit tests. -->
