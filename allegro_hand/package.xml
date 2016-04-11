@@ -16,6 +16,7 @@
   <run_depend>allegro_hand_driver</run_depend>
   <run_depend>allegro_hand_keyboard</run_depend>
   <run_depend>rospy</run_depend>
+  <run_depend>joint_state_publisher</run_depend>
   <run_depend>rostest</run_depend>
 
   <export>
