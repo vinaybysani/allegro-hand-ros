@@ -4,7 +4,7 @@
     <xacro:property name="DEG2RAD" value="0.01745329251"/>
 
     <!-- ======================== BASE PARAMS ========================= -->
-    <xacro:property name="base_link_z" value="0.095"/>
+    <xacro:property name="palm_link_z" value="0.095"/>
 
     <!-- ======================== FINGER PARAMS ======================== -->
     <xacro:property name="links_x" value="0.0196"/>
@@ -51,17 +51,9 @@
     <xacro:property name="limit_3_t_low" value="-0.262"/>
 
     <!-- ============================================================================= -->
-    <!-- Used for fixing robot to Gazebo 'base_link' -->
-    <link name="world"/>
 
-    <joint name="fixed" type="fixed">
-      <parent link="world"/>
-      <child link="base_link"/>
-    </joint>
-
-
-    <!-- BASE -->
-    <link name="base_link">
+    <!-- PALM -->
+    <link name="palm_link">
         <visual>
             <geometry>
                 <mesh filename="package://allegro_hand_description/meshes/base_link.STL"/>
@@ -73,13 +65,13 @@
         </visual>
 
         <collision>
-            <origin rpy="0 0 0" xyz="-0.009300 0 -${base_link_z/2}"/>
+            <origin rpy="0 0 0" xyz="-0.009300 0 -${palm_link_z/2}"/>
             <geometry>
-                <box size="0.0408 0.1130 ${base_link_z}"/>
+                <box size="0.0408 0.1130 ${palm_link_z}"/>
             </geometry>
         </collision>
         <inertial>
-          <origin xyz="0 0 ${base_link_z/2}" rpy="0 0 0"/>
+          <origin xyz="0 0 ${palm_link_z/2}" rpy="0 0 0"/>
           <mass value="0.4154"/>
           <inertia
               ixx="1e-4" ixy="0.0" ixz="0.0"
@@ -163,7 +155,7 @@
             <limit effort="15" velocity="7"
                    lower="${limit_0_t_low-joint_safety_margin}"
                    upper="${limit_0_t_up-joint_safety_margin}"/>
-            <parent link="base_link"/>
+            <parent link="palm_link"/>
             <child link="link_${finger_num*4+0}"/>
             <origin rpy="${finger_angle_r} ${finger_angle_p} ${finger_angle_y}"
                     xyz="${offset_origin_x} ${offset_origin_y} ${offset_origin_z}"/>
@@ -350,7 +342,7 @@
             <limit effort="15" velocity="7"
                    lower="${limit_0_low+joint_safety_margin}"
                    upper="${limit_0_up-joint_safety_margin}"/>
-            <parent link="base_link"/>
+            <parent link="palm_link"/>
             <child link="link_${finger_num*4+0}"/>
             <origin rpy="${finger_angle_r} 0 0"
                     xyz="${offset_origin_x} ${offset_origin_y} ${offset_origin_z}"/>
