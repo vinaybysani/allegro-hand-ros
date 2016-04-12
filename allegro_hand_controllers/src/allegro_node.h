@@ -19,8 +19,8 @@
 class controlAllegroHand;
 
 // Topic names.
-const std::string JOINT_STATE_TOPIC = "/allegroHand/joint_states";
-const std::string DESIRED_STATE_TOPIC = "/allegroHand/joint_cmd";
+const std::string JOINT_STATE_TOPIC = "allegroHand/joint_states";
+const std::string DESIRED_STATE_TOPIC = "allegroHand/joint_cmd";
 
 
 class AllegroNode {

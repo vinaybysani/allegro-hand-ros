@@ -127,7 +127,7 @@ AHKeyboard::AHKeyboard():
     count_(0),
     edit_(0.0)
 {
-  cmd_pub_ = nh_.advertise<std_msgs::String>("/allegroHand/lib_cmd", 10);
+  cmd_pub_ = nh_.advertise<std_msgs::String>("allegroHand/lib_cmd", 10);
 }
 
 

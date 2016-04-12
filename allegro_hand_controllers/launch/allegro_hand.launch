@@ -70,10 +70,7 @@
 
   <!-- Load the robot description directly from the xacro file. (NOTE: store it
        in two parameter names.) -->
-  <param name="/robot_description"
-         command="$(find xacro)/xacro.py
-                  $(find allegro_hand_description)/allegro_hand_description_$(arg HAND).xacro"/>
-  <param name="/allegroHand_$(arg NUM)/robot_description"
+  <param name="robot_description"
          command="$(find xacro)/xacro.py
                   $(find allegro_hand_description)/allegro_hand_description_$(arg HAND).xacro"/>
 
@@ -90,13 +87,13 @@
         unless="$(arg SIM)" >
 
     <!-- Remapping of topics into enumerated allegroHand_# namespace -->
-    <remap from="/allegroHand/joint_states" to="/allegroHand_$(arg NUM)/joint_states"/>
-    <remap from="/allegroHand/joint_cmd" to="/allegroHand_$(arg NUM)/joint_cmd"/>
-    <remap from="/allegroHand/lib_cmd" to="/allegroHand_$(arg NUM)/lib_cmd"/>
-    <remap from="/allegroHand/torque_cmd" to="/allegroHand_$(arg NUM)/torque_cmd"/>
-    <remap from="/allegroHand/envelop_torque" to="/allegroHand_$(arg NUM)/envelop_torque"/>
-    <remap from="/allegroHand/joint_current_states" to="/allegroHand_$(arg NUM)/joint_current_states"/>
-    <remap from="/allegroHand/joint_desired_states" to="/allegroHand_$(arg NUM)/joint_desired_states"/>
+    <remap from="allegroHand/joint_states" to="allegroHand_$(arg NUM)/joint_states"/>
+    <remap from="allegroHand/joint_cmd" to="allegroHand_$(arg NUM)/joint_cmd"/>
+    <remap from="allegroHand/lib_cmd" to="allegroHand_$(arg NUM)/lib_cmd"/>
+    <remap from="allegroHand/torque_cmd" to="allegroHand_$(arg NUM)/torque_cmd"/>
+    <remap from="allegroHand/envelop_torque" to="allegroHand_$(arg NUM)/envelop_torque"/>
+    <remap from="allegroHand/joint_current_states" to="allegroHand_$(arg NUM)/joint_current_states"/>
+    <remap from="allegroHand/joint_desired_states" to="allegroHand_$(arg NUM)/joint_desired_states"/>
 
     <!--parameters are within the scope of the hand node so that multiple hands can be run at the same time -->
     <rosparam file="$(arg ZEROS)" command="load" />
@@ -120,7 +117,7 @@
 
   <node name="joint_states_$(arg NUM)" pkg="joint_state_publisher" type="joint_state_publisher"
         if="$(arg SIM)">
-    <remap from="/joint_states" to="/allegroHand_$(arg NUM)/joint_states"/>
+    <remap from="joint_states" to="allegroHand_$(arg NUM)/joint_states"/>
     <param name="use_gui" value="$(arg JSP_GUI)"/>
   </node>
 
@@ -128,8 +125,8 @@
   <node name="jointState2tf_$(arg NUM)"
         pkg="robot_state_publisher"
         type="state_publisher">
-    <remap from="/tf" to="/allegroHand_$(arg NUM)/tf"/>
-    <remap from="/joint_states" to="/allegroHand_$(arg NUM)/joint_states"/>
+    <remap from="tf" to="allegroHand_$(arg NUM)/tf"/>
+    <remap from="joint_states" to="allegroHand_$(arg NUM)/joint_states"/>
   </node>
 
   <!-- Keyboard handler (if arg KEYBOARD is true) -->
@@ -138,7 +135,7 @@
         type="allegro_hand_keyboard_node"
         output="screen"
         if="$(arg KEYBOARD)">
-    <remap from="/allegroHand/lib_cmd" to="/allegroHand_$(arg NUM)/lib_cmd"/>
+    <remap from="allegroHand/lib_cmd" to="allegroHand_$(arg NUM)/lib_cmd"/>
   </node>
 
 

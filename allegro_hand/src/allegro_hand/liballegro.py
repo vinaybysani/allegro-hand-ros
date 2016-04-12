@@ -7,7 +7,7 @@ from sensor_msgs.msg import JointState
 
 class AllegroClient(object):
 
-    def __init__(self, hand_topic_prefix='/allegroHand', num_joints=16):
+    def __init__(self, hand_topic_prefix='allegroHand', num_joints=16):
         """ Simple python interface to the Allegro Hand.
 
         The AllegroClient is a simple python interface to an allegro
@@ -18,12 +18,12 @@ class AllegroClient(object):
         The constructors sets up publishers and subscribes to the joint states
         topic for the hand.
 
-        Note on hand topic names: The default topic (/allegroHand/foo) can be
-        remapped to a different topic prefix (/allegroHand_0/foo) in one of two
+        Note on hand topic names: The default topic (allegroHand/foo) can be
+        remapped to a different topic prefix (allegroHand_0/foo) in one of two
         ways:
-          1. pass in /allegroHand_0 as the hand_topic_prefix
+          1. pass in allegroHand_0 as the hand_topic_prefix
           2. remap *each* topic on the command line
-             (/allegroHand/joint_cmd:=/allegroHand_0/joint_cmd)
+             (allegroHand/joint_cmd:=allegroHand_0/joint_cmd)
         The first method is probably easier.
 
         :param hand_topic_prefix: The prefix to use for *all* hand
@@ -37,8 +37,9 @@ class AllegroClient(object):
         # Topics (that can be remapped) for named graps
         # (ready/envelop/grasp/etc.), joint commands (position and
         # velocity), joint state (subscribing), and envelop torque. Note that
-        # we can change the hand topic prefix (for example, to /allegroHand_0)
+        # we can change the hand topic prefix (for example, to allegroHand_0)
         # instead of remapping it at the command line.
+        hand_topic_prefix=hand_topic_prefix.rstrip('/')
         topic_grasp_command = '{}/lib_cmd'.format(hand_topic_prefix)
         topic_joint_command = '{}/joint_cmd'.format(hand_topic_prefix)
         topic_joint_state = '{}/joint_states'.format(hand_topic_prefix)
