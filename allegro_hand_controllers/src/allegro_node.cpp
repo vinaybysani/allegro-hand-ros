@@ -31,6 +31,8 @@ AllegroNode::AllegroNode() {
     current_joint_state.name[i] = jointNames[i];
     desired_torque[i] = 0.0;
     current_velocity[i] = 0.0;
+    current_position_filtered[i] = 0.0;
+    current_velocity_filtered[i] = 0.0;
   }
 
   // Get Allegro Hand information from parameter server
@@ -100,6 +102,14 @@ void AllegroNode::updateController() {
   // Calculate loop time;
   tnow = ros::Time::now();
   dt = 1e-9 * (tnow - tstart).nsec;
+
+  // When running gazebo, sometimes the loop gets called *too* often and dt will
+  // be zero. Ensure nothing bad (like divide-by-zero) happens because of this.
+  if(dt <= 0) {
+    ROS_DEBUG_STREAM_THROTTLE(1, "AllegroNode::updateController dt is zero.");
+    return;
+  }
+
   tstart = tnow;
 
   // save last iteration info
