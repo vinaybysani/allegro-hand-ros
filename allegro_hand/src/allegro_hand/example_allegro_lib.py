@@ -11,7 +11,7 @@ This file contains several examples of the AllegroClient python library that
 allows you to interact with the Allegro hand directly using python.
 
 Set the allegro hand topic directly using:
-   --hand_prefix=/allegroHand_0
+   --hand_prefix=allegroHand_0
 (or some other topic name.)
 
 """
@@ -121,7 +121,7 @@ def run(args):
     parser = argparse.ArgumentParser(description='Allegro python library')
     parser.add_argument('--hand_prefix', type=str,
                         help='ROS topic prefix for the hand.',
-                        default='/allegroHand')
+                        default='allegroHand')
 
     (parsed_args, other_args) = parser.parse_known_args(args)
     rospy.init_node('example_allegro_lib', other_args)
