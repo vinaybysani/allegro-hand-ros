@@ -39,6 +39,7 @@ class AllegroClient(object):
         # velocity), joint state (subscribing), and envelop torque. Note that
         # we can change the hand topic prefix (for example, to allegroHand_0)
         # instead of remapping it at the command line.
+        hand_topic_prefix=hand_topic_prefix.rstrip('/')
         topic_grasp_command = '{}/lib_cmd'.format(hand_topic_prefix)
         topic_joint_command = '{}/joint_cmd'.format(hand_topic_prefix)
         topic_joint_state = '{}/joint_states'.format(hand_topic_prefix)

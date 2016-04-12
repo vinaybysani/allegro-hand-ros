@@ -103,6 +103,10 @@ class TestAllegro(unittest.TestCase):
         client = AllegroClient(hand_topic_prefix='/Prefix')
         self.assertEqual('/Prefix/lib_cmd', client.pub_grasp.name)
 
+    def test_topic_prefix_trailing_slash(self):
+        client = AllegroClient(hand_topic_prefix='/Prefix/')
+        self.assertEqual('/Prefix/lib_cmd', client.pub_grasp.name)
+
     def test_command_torques(self):
         des_torques = [0.123] * 16
         ret = self.client.command_joint_torques(des_torques)
@@ -134,4 +138,3 @@ class TestAllegro(unittest.TestCase):
         self.client.disconnect()
         self.assertEqual(1, self.client.pub_grasp._pub_count)
         self.assertEqual('off', self.client.pub_grasp._last_published.data)
-
