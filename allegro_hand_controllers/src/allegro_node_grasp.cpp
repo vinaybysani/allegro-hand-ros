@@ -4,9 +4,9 @@
 #include "allegro_hand_driver/controlAllegroHand.h"
 
 // Topics
-const std::string JOINT_CMD_TOPIC = "/allegroHand/joint_cmd";
-const std::string LIB_CMD_TOPIC = "/allegroHand/lib_cmd";
-const std::string ENVELOP_TORQUE_TOPIC = "/allegroHand/envelop_torque";
+const std::string JOINT_CMD_TOPIC = "allegroHand/joint_cmd";
+const std::string LIB_CMD_TOPIC = "allegroHand/lib_cmd";
+const std::string ENVELOP_TORQUE_TOPIC = "allegroHand/envelop_torque";
 
 // Define a map from string (received message) to eMotionType (Bhand controller grasp).
 std::map<std::string, eMotionType> bhand_grasps = {
@@ -78,7 +78,7 @@ void AllegroNodeGrasp::setJointCallback(const sensor_msgs::JointState &msg) {
 }
 
 // The grasp controller can set the desired envelop grasp torque by listening to
-// Float32 messages on ENVELOP_TORQUE_TOPIC ("/allegroHand/envelop_torque").
+// Float32 messages on ENVELOP_TORQUE_TOPIC ("allegroHand/envelop_torque").
 void AllegroNodeGrasp::envelopTorqueCallback(const std_msgs::Float32 &msg) {
   const double torque = msg.data;
   ROS_INFO("Setting envelop torque to %.3f.", torque);

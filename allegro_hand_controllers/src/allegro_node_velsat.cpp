@@ -11,10 +11,10 @@
 #include "allegro_node_velsat.h"
 
 // Topics
-const std::string JOINT_CMD_TOPIC = "/allegroHand/joint_cmd";
-const std::string LIB_CMD_TOPIC = "/allegroHand/lib_cmd";
-const std::string JOINT_DESIRED_TOPIC = "/allegroHand/joint_desired_states";
-const std::string JOINT_CURRENT_TOPIC = "/allegroHand/joint_current_states";
+const std::string JOINT_CMD_TOPIC = "allegroHand/joint_cmd";
+const std::string LIB_CMD_TOPIC = "allegroHand/lib_cmd";
+const std::string JOINT_DESIRED_TOPIC = "allegroHand/joint_desired_states";
+const std::string JOINT_CURRENT_TOPIC = "allegroHand/joint_current_states";
 
 #define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
 #define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)

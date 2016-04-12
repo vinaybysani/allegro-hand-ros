@@ -7,8 +7,8 @@ using namespace std;
 #include "allegro_hand_driver/controlAllegroHand.h"
 
 // Topics
-const std::string TORQUE_CMD_TOPIC = "/allegroHand/torque_cmd";
-const std::string LIB_CMD_TOPIC = "/allegroHand/lib_cmd";
+const std::string TORQUE_CMD_TOPIC = "allegroHand/torque_cmd";
+const std::string LIB_CMD_TOPIC = "allegroHand/lib_cmd";
 
 // Constructor: subscribe to topics.
 AllegroNodeTorque::AllegroNodeTorque()
