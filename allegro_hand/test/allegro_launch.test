@@ -4,13 +4,12 @@
   <include file="$(find allegro_hand_controllers)/launch/allegro_hand.launch">
     <arg name="HAND" value="left"/>
     <arg name="NUM" value="test"/>
-    <arg name="CONTROLLER" value="pd"/>
+    <arg name="CONTROLLER" value="sim"/>
     <arg name="RESPAWN" value="false"/>
     <arg name="VISUALIZE" value="false" />
     <arg name="ZEROS" value="$(find allegro_hand_parameters)/zero_files/zero_SAH020BL016.yaml" />
     <arg name="AUTO_CAN" value="true"/>
     <arg name="CAN_DEVICE" value="none"/>
-    <arg name="SIM" value="true"/>
     <arg name="GAZEBO" value="false"/>
     <arg name="JSP_GUI" value="false" />
   </include>
