@@ -26,7 +26,7 @@ const std::string LIB_CMD_TOPIC = "allegroHand/lib_cmd";
 class AllegroNode {
  public:
 
-  AllegroNode();
+  AllegroNode(bool sim = false);
 
   virtual ~AllegroNode();
 
@@ -34,9 +34,9 @@ class AllegroNode {
 
   void desiredStateCallback(const sensor_msgs::JointState &desired);
 
-  void updateWriteReadCAN();
+  virtual void updateWriteReadCAN();
 
-  void updateController();
+  virtual void updateController();
 
   // This is the main method that must be implemented by the various
   // controller nodes.

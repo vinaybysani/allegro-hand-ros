@@ -20,7 +20,8 @@ At this point no effort has been made to be backwards compatible. Some of the
 non-compatible changes between the two version are:
 
  - Put all of the controllers into one *package* (allegro_hand_controllers) and
-   made each controller a different node (allegro_node_XXXX): grasp, pd, velsat.
+   made each controller a different node (allegro_node_XXXX): grasp, pd, velsat,
+   and sim.
  - Single launch file with arguments instead of multiple launch files with
    repeated code.
  - Both the parameter and description files are now ROS packages, so that
@@ -28,6 +29,8 @@ non-compatible changes between the two version are:
  - These packages will likely not work with pre-hydro versions (only tested on
    indigo so far, please let me know if this works on other distributions).
  - Added a torque controller (from @nisommer).
+ - Added a 'simulated' pass-through hand controller that sets the joint state to
+   the desired joint state.
 
 Launch file instructions:
 ------------------------
@@ -43,13 +46,13 @@ Optional (recommended) arguments:
 
           NUM:=0|1|...
           ZEROS:=/path/to/zeros_file.yaml
-          CONTROLLER:=grasp|pd|velsat|torque
+          CONTROLLER:=grasp|pd|velsat|torque|sim
           RESPAWN:=true|false   Respawn controller if it dies.
           KEYBOARD:=true|false  (default is true)
           AUTO_CAN:=true|false  (default is true)
           CAN_DEVICE:=/dev/pcanusb1 | /dev/pcanusbNNN  (ls -l /dev/pcan* to see open CAN devices)
           VISUALIZE:=true|false  (Launch rviz)
-          SIM:=true|false  (use a joint_state_publisher instead of the actual robot)
+          JSP_GUI:=true|false  (show the joint_state_publisher for *desired* joint angles)
 
 Note on `AUTO_CAN`: There is a nice script `detect_pcan.py` which automatically
 finds an open `/dev/pcanusb` file. If instead you specify the can device
@@ -80,6 +83,7 @@ Packages
    * pd: Joint space control: save and hold positions.
    * velsat: velocity saturation joint space control (supposedly experimental)
    * torque: Direct torque control.
+   * sim: Just pass desired joint states through as current joint states.
  * **allegro_hand_description** xacro descriptions for the kinematics of the
      hand, rviz configuration and meshes.
  * **allegro_hand_keyboard** Node that sends the commanded grasps. All commands
