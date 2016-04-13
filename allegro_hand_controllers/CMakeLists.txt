@@ -42,6 +42,9 @@ target_link_libraries(allegro_node_grasp allegro_node ${catkin_LIBRARIES})
 add_executable(allegro_node_pd src/allegro_node_pd.cpp)
 target_link_libraries(allegro_node_pd allegro_node ${catkin_LIBRARIES})
 
+add_executable(allegro_node_sim src/allegro_node_sim.cpp)
+target_link_libraries(allegro_node_sim allegro_node ${catkin_LIBRARIES})
+
 add_executable(allegro_node_velsat src/allegro_node_velsat.cpp)
 target_link_libraries(allegro_node_velsat allegro_node ${catkin_LIBRARIES})
 

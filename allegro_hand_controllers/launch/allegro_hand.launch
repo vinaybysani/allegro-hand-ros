@@ -5,13 +5,13 @@
        Suggested arguments:
           NUM:=0|1|...
           ZEROS:=/path/to/zeros_file.yaml
-          CONTROLLER:=grasp|pd|velsat|torque
+          CONTROLLER:=grasp|pd|velsat|torque|sim
           RESPAWN:=true|false   Respawn controller if it dies.
           KEYBOARD:=true|false  (default is true)
           AUTO_CAN:=true|false  (if true, ignores CAN_DEVICE argument and finds the can device automagically).
           CAN_DEVICE:=/dev/pcanusb1 | /dev/pcanusbNNN  (ls -l /dev/pcan* to see open CAN devices)
           VISUALIZE:=true|false  (Launch rviz)
-          SIM:=true|false  (use a joint_state_publisher instead of the actual robot)
+          JSP_GUI:=true|false  (If true, start a joint_state_publisher for commanded joint angles).
           GAZEBO:=true|false  (NOTE: Gazebo support is highly experimental at this point)
 
        This script launches the following nodes:
@@ -30,11 +30,10 @@
        as an input for both the robot_description and for the grasping library controllers. -->
   <arg name="HAND"/>
   <arg name="NUM" default="0"/>
-  <arg name="SIM" default="false"/>
   <arg name="GAZEBO" default="false"/>
 
-  <!-- Show the GUI in the joint_state_publisher -->
-  <arg name="JSP_GUI" default="true"/>
+  <!-- Use the joint_state_publisher for *commanded* joint angles. -->
+  <arg name="JSP_GUI" default="false"/>
 
   <!-- Visualization with rviz, only if arg VISUALIZE is set to true. Default is
        false, the allegro_viz.launch can be started separated. -->
@@ -74,8 +73,7 @@
          command="$(find xacro)/xacro.py
                   $(find allegro_hand_description)/allegro_hand_description_$(arg HAND).xacro"/>
 
-  <!-- Allegro Hand controller and communication node. Only if SIM is false
-       (otherwise use the joint_state_publisher. -->
+  <!-- Allegro Hand controller and communication node. -->
   <node name="allegroHand_$(arg HAND)_$(arg NUM)"
         pkg="allegro_hand_controllers"
         type="allegro_node_$(arg CONTROLLER)"
@@ -83,8 +81,7 @@
         clear_params="true"
         respawn="$(arg RESPAWN)"
         respawn_delay="2"
-        args="$(arg POLLING)"
-        unless="$(arg SIM)" >
+        args="$(arg POLLING)" >
 
     <!-- Remapping of topics into enumerated allegroHand_# namespace -->
     <remap from="allegroHand/joint_states" to="allegroHand_$(arg NUM)/joint_states"/>
@@ -115,10 +112,12 @@
     <param name="/hand_info/which_hand" value="$(arg HAND)" /> <!-- See HAND arg above -->
   </node>
 
+  <!-- NOTE: The joint_state_publisher is actually commanding *desired* joint
+       angles. You can use the 'sim' controller to have a non-existent hand. -->
   <node name="joint_states_$(arg NUM)" pkg="joint_state_publisher" type="joint_state_publisher"
-        if="$(arg SIM)">
-    <remap from="joint_states" to="allegroHand_$(arg NUM)/joint_states"/>
-    <param name="use_gui" value="$(arg JSP_GUI)"/>
+        if="$(arg JSP_GUI)">
+    <remap from="joint_states" to="allegroHand_$(arg NUM)/joint_cmd"/>
+    <param name="use_gui" value="true"/>
   </node>
 
   <!-- Joint States (angles) to Joint Transforms -->
