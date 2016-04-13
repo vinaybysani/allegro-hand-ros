@@ -11,8 +11,6 @@
 #include "allegro_node_velsat.h"
 
 // Topics
-const std::string JOINT_CMD_TOPIC = "allegroHand/joint_cmd";
-const std::string LIB_CMD_TOPIC = "allegroHand/lib_cmd";
 const std::string JOINT_DESIRED_TOPIC = "allegroHand/joint_desired_states";
 const std::string JOINT_CURRENT_TOPIC = "allegroHand/joint_current_states";
 
@@ -140,7 +138,7 @@ AllegroNodeVelSat::AllegroNodeVelSat()
   msgJoint_current.name.resize(DOF_JOINTS);
 
   joint_cmd_sub = nh.subscribe(
-          JOINT_CMD_TOPIC, 3, &AllegroNodeVelSat::setJointCallback, this);
+      DESIRED_STATE_TOPIC, 3, &AllegroNodeVelSat::setJointCallback, this);
   lib_cmd_sub = nh.subscribe(
           LIB_CMD_TOPIC, 1, &AllegroNodeVelSat::libCmdCallback, this);
 

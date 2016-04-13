@@ -3,9 +3,7 @@
 #include "bhand/BHand.h"
 #include "allegro_hand_driver/controlAllegroHand.h"
 
-// Topics
-const std::string JOINT_CMD_TOPIC = "allegroHand/joint_cmd";
-const std::string LIB_CMD_TOPIC = "allegroHand/lib_cmd";
+// The only topic specific to the 'grasp' controller is the envelop torque.
 const std::string ENVELOP_TORQUE_TOPIC = "allegroHand/envelop_torque";
 
 // Define a map from string (received message) to eMotionType (Bhand controller grasp).
@@ -31,7 +29,7 @@ AllegroNodeGrasp::AllegroNodeGrasp()
   initController(whichHand);
 
   joint_cmd_sub = nh.subscribe(
-          JOINT_CMD_TOPIC, 3, &AllegroNodeGrasp::setJointCallback, this);
+          DESIRED_STATE_TOPIC, 3, &AllegroNodeGrasp::setJointCallback, this);
   lib_cmd_sub = nh.subscribe(
           LIB_CMD_TOPIC, 1, &AllegroNodeGrasp::libCmdCallback, this);
 

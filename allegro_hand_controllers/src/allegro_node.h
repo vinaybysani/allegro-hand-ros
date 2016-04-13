@@ -18,10 +18,10 @@
 // Forward declaration.
 class controlAllegroHand;
 
-// Topic names.
+// Topic names: current & desired JointState, named grasp to command.
 const std::string JOINT_STATE_TOPIC = "allegroHand/joint_states";
 const std::string DESIRED_STATE_TOPIC = "allegroHand/joint_cmd";
-
+const std::string LIB_CMD_TOPIC = "allegroHand/lib_cmd";
 
 class AllegroNode {
  public:

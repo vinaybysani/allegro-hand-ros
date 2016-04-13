@@ -6,9 +6,6 @@ using namespace std;
 #include "ros/ros.h"
 #include "allegro_hand_driver/controlAllegroHand.h"
 
-// Topics
-const std::string LIB_CMD_TOPIC = "allegroHand/lib_cmd";
-
 #define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
 #define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
 
