@@ -16,7 +16,7 @@ std::string jointNames[DOF_JOINTS] =
         };
 
 
-AllegroNode::AllegroNode() {
+AllegroNode::AllegroNode(bool sim /* = false */) {
   mutex = new boost::mutex();
 
   // Create arrays 16 long for each of the four joint state components
@@ -47,10 +47,12 @@ AllegroNode::AllegroNode() {
   ros::param::get("~hand_info/version", version);
 
   // Initialize CAN device
-  canDevice = new controlAllegroHand();
-  canDevice->init();
-  usleep(3000);
-  updateWriteReadCAN();
+  if(!sim) {
+    canDevice = new controlAllegroHand();
+    canDevice->init();
+    usleep(3000);
+    updateWriteReadCAN();
+  }
 
   // Start ROS time
   tstart = ros::Time::now();
