@@ -23,6 +23,8 @@ class AllegroNodePD : public AllegroNode {
   // can turn the hand off.
   void libCmdCallback(const std_msgs::String::ConstPtr &msg);
 
+  void setJointCallback(const sensor_msgs::JointState &msg);
+
   // Loads all gains and initial positions from the parameter server.
   void initController(const std::string &whichHand);
 
@@ -32,6 +34,10 @@ class AllegroNodePD : public AllegroNode {
  protected:
   // Handles defined grasp commands (std_msgs/String).
   ros::Subscriber lib_cmd_sub;
+
+  // Subscribe to desired joint states, only so we can set control_hand_ to true
+  // when we receive a desired command.
+  ros::Subscriber joint_cmd_sub;
 
   // If this flag is true, the hand will be controlled (either in joint position
   // or joint torques). If false, desired torques will all be zero.

@@ -83,6 +83,9 @@ AllegroNodePD::AllegroNodePD()
 
   lib_cmd_sub = nh.subscribe(
           LIB_CMD_TOPIC, 1, &AllegroNodePD::libCmdCallback, this);
+
+  joint_cmd_sub = nh.subscribe(
+          DESIRED_STATE_TOPIC, 1, &AllegroNodePD::setJointCallback, this);
 }
 
 AllegroNodePD::~AllegroNodePD() {
@@ -119,6 +122,12 @@ void AllegroNodePD::libCmdCallback(const std_msgs::String::ConstPtr &msg) {
       desired_joint_state_.position[i] = current_position[i];
     mutex->unlock();
   }
+}
+
+void AllegroNodePD::setJointCallback(const sensor_msgs::JointState &msg) {
+  ROS_WARN_COND(!control_hand_, "Setting control_hand_ to True because of "
+                "received JointState message");
+  control_hand_ = true;
 }
 
 void AllegroNodePD::computeDesiredTorque() {
