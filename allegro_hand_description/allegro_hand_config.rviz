@@ -54,6 +54,8 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        hand_root:
+          Value: true
         link_0.0:
           Value: true
         link_1.0:
@@ -102,31 +104,32 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        palm_link:
-          link_0.0:
-            link_1.0:
-              link_2.0:
-                link_3.0:
-                  link_3.0_tip:
-                    {}
-          link_12.0:
-            link_13.0:
-              link_14.0:
-                link_15.0:
-                  link_15.0_tip:
-                    {}
-          link_4.0:
-            link_5.0:
-              link_6.0:
-                link_7.0:
-                  link_7.0_tip:
-                    {}
-          link_8.0:
-            link_9.0:
-              link_10.0:
-                link_11.0:
-                  link_11.0_tip:
-                    {}
+        hand_root:
+          palm_link:
+            link_0.0:
+              link_1.0:
+                link_2.0:
+                  link_3.0:
+                    link_3.0_tip:
+                      {}
+            link_12.0:
+              link_13.0:
+                link_14.0:
+                  link_15.0:
+                    link_15.0_tip:
+                      {}
+            link_4.0:
+              link_5.0:
+                link_6.0:
+                  link_7.0:
+                    link_7.0_tip:
+                      {}
+            link_8.0:
+              link_9.0:
+                link_10.0:
+                  link_11.0:
+                    link_11.0_tip:
+                      {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -139,6 +142,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        hand_root:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         link_0.0:
           Alpha: 1
           Show Axes: false
@@ -253,7 +260,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 130; 130; 130
-    Fixed Frame: palm_link
+    Fixed Frame: hand_root
     Frame Rate: 30
   Name: root
   Tools:
@@ -274,7 +281,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.17703
+      Distance: 0.786291
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -286,10 +293,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.544797
+      Pitch: 0.639797
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.483557
+      Yaw: 0.613557
     Saved: ~
 Window Geometry:
   Displays:
