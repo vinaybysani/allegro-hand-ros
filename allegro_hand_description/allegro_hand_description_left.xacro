@@ -52,6 +52,17 @@
 
     <!-- ============================================================================= -->
 
+    <!-- Base link -->
+    <link name="hand_root">
+      <origin xyz="0 0 0"/>
+    </link>
+
+    <joint name="root_to_base" type="fixed">
+      <parent link="hand_root"/>
+      <child link="palm_link"/>
+      <origin xyz="0 0 ${palm_link_z}"/>
+    </joint>
+
     <!-- PALM -->
     <link name="palm_link">
         <visual>

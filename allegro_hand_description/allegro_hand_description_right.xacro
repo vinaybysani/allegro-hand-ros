@@ -14,8 +14,8 @@
     <xacro:property name="link2_z" value="0.0384"/>
 
     <!-- full height from joint to tip. when used,
-    the radius of the finger tip sphere will be subtracted
-    and one fixed link will be added for the tip. -->
+         the radius of the finger tip sphere will be subtracted
+         and one fixed link will be added for the tip. -->
     <xacro:property name="link3_z" value="0.0387"/>
     <xacro:property name="fingerTip_r" value="0.0120"/>
     <xacro:property name="offset_origin_x_const" value="0"/>
@@ -51,6 +51,17 @@
     <xacro:property name="limit_3_t_low" value="-0.262"/>
 
     <!-- ============================================================================= -->
+
+    <!-- Base link -->
+    <link name="hand_root">
+      <origin xyz="0 0 0"/>
+    </link>
+
+    <joint name="root_to_base" type="fixed">
+      <parent link="hand_root"/>
+      <child link="palm_link"/>
+      <origin xyz="0 0 ${palm_link_z}"/>
+    </joint>
 
     <!-- PALM -->
     <link name="palm_link">
