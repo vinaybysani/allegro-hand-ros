@@ -10,6 +10,9 @@ catkin_package(
 #  DEPENDS python-scipy python-matplotlib
 )
 
+catkin_install_python(PROGRAMS scripts/detect_pcan.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 ## Testing
 ## Add folders to be run by python nosetests
 if(CATKIN_ENABLE_TESTING)
