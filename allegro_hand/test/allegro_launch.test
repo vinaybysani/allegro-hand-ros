@@ -1,7 +1,7 @@
 <launch>
 
   <!-- Launch the allegro hand without comms (in sim mode). -->
-  <include file="$(find allegro_hand_controllers)/launch/allegro_hand.launch">
+  <include file="$(find allegro_hand)/launch/allegro_hand.launch">
     <arg name="HAND" value="left"/>
     <arg name="NUM" value="test"/>
     <arg name="CONTROLLER" value="sim"/>
