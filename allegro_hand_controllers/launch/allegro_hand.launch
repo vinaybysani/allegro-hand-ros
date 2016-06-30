@@ -106,7 +106,7 @@
     <param name="/comm/CAN_CH" value="$(arg CAN_DEVICE)"
            unless="$(arg AUTO_CAN)" />
     <param name="/comm/CAN_CH"
-           command="$(find allegro_hand_description)/scripts/detect_pcan.py"
+           command="$(find allegro_hand)/scripts/detect_pcan.py"
            if="$(arg AUTO_CAN)" />
 
     <param name="/hand_info/which_hand" value="$(arg HAND)" /> <!-- See HAND arg above -->
