@@ -1,5 +1,7 @@
 allegro-hand unofficial fork
 ============================
+[![Build Status](https://travis-ci.org/felixduvallet/allegro-hand-ros.svg?branch=master)](https://travis-ci.org/felixduvallet/allegro-hand-ros)
+
 
 This is an unofficial fork of SimLab's allegro [hand ros package][1].
 
@@ -16,31 +18,21 @@ It also provides the BHand library directly in this package (including both
 32-bit and 64-bit versions, though 32-bit systems will need to update the
 symlink manually).
 
-At this point no effort has been made to be backwards compatible. Some of the
-non-compatible changes between the two version are:
-
- - Put all of the controllers into one *package* (allegro_hand_controllers) and
-   made each controller a different node (allegro_node_XXXX): grasp, pd, velsat,
-   and sim.
- - Single launch file with arguments instead of multiple launch files with
-   repeated code.
- - Both the parameter and description files are now ROS packages, so that
-   `rospack find` works with them.
- - These packages will likely not work with pre-hydro versions (only tested on
-   indigo so far, please let me know if this works on other distributions).
- - Added a torque controller (from @nisommer).
- - Added a 'simulated' pass-through hand controller that sets the joint state to
-   the desired joint state.
+At this point no effort has been made to be backwards compatible.
 
 Launch file instructions:
 ------------------------
 
-There is now a single file,
-[allegro_hand.launch](allegro_hand_controllers/launch/allegro_hand.launch)
+There is a single file to start any hand,
+[allegro_hand.launch](allegro_hand/launch/allegro_hand.launch)
 that starts the hand. It takes many arguments, but at a minimum you must specify
 the handedness:
 
-    roslaunch allegro_hand_controllers allegro_hand.launch HAND:=right
+    roslaunch allegro_hand allegro_hand.launch HAND:=right
+
+You can also simulate the hand very easily:
+
+    roslaunch allegro_hand allegro_hand.launch HAND:=right CONTROLLER:=sim
 
 Optional (recommended) arguments:
 
@@ -64,7 +56,7 @@ The second launch file is for visualization, it is included in
 it separately (with `VISUALIZE:=false`), for example if you want to start rviz separately
 (and keep it running):
 
-    roslaunch allegro_hand_controllers allegro_viz.launch HAND:=right
+    roslaunch allegro_hand allegro_viz.launch HAND:=right
 
 Note that you should also specify the hand `NUM` parameter in the viz launch if
 the hand number is not zero.
@@ -73,7 +65,7 @@ Packages
 --------
 
  * **allegro_hand** A python client that enables direct control of the hand in
-                    python code.
+                    python code, and all generic launch files.
  * **allegro_hand_driver** Driver for talking with the allegro hand.
  * **allegro_hand_controllers** Different nodes that actually control the hand.
  The AllegroNode class handles all the generic driver comms, each class then
@@ -111,28 +103,6 @@ Useful Links
 
  * [Allegro Hand wiki](http://www.simlab.co.kr/AllegroHand/wiki).
  * [ROS wiki for original package](http://www.ros.org/wiki/allegro_hand_ros).
-
-
-Controlling More Than One Hand
-------------------------------
-
-When running more than one hand using ROS, you must specify the number of the
-hand when launching.
-
-    roslaunch allegro_hand.launch HAND:=right ZEROS:=parameters/zero0.yaml NUM:=0 CAN_DEVICE:=/dev/pcan0 AUTO_CAN:=false
-
-    roslaunch allegro_hand.launch HAND:=left  ZEROS:=parameters/zero1.yaml NUM:=1 CAN_DEVICE:=/dev/pcan1 AUTO_CAN:=false
-
-
-Known Issues:
--------------
-
-While all parameters defining the hand's motor/encoder directions and offsets
-fall under the enumerated "allegroHand_#" namespaces, the parameter
-"robot_description" defining the kinematic structure and joint limits remains
-global. When launching a second hand, this parameter is overwritten. I have yet
-to find a way to have a separate enumerated "robot_decription" parameter for
-each hand. If you have any info on this, please advise.
 
 
 Installing the PCAN driver

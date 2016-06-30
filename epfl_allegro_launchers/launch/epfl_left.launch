@@ -12,7 +12,7 @@
   <arg name="KEYBOARD" default="true" />
   <arg name="GAZEBO" default="false" />  <!--use at your own risk-->
 
-  <include file="$(find allegro_hand_controllers)/launch/allegro_hand.launch">
+  <include file="$(find allegro_hand)/launch/allegro_hand.launch">
     <arg name="HAND" value="$(arg HAND)"/>
     <arg name="NUM" value="$(arg NUM)"/>
     <arg name="CONTROLLER" value="$(arg CONTROLLER)"/>
