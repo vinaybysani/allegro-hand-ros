@@ -83,30 +83,18 @@ void AllegroNodeSim::initController(const std::string &whichHand) {
 
 }
 
-void AllegroNodeSim::doIt(bool polling) {
-  // Main spin loop, uses the publisher/subscribers.
-  if (polling) {
-    ROS_INFO("Polling = true.");
-    while (ros::ok()) {
-      updateController();
-      ros::spinOnce();
-    }
-  } else {
-    ROS_INFO("Polling = false.");
-
-    // Timer callback (not recommended).
-    ros::Timer timer = startTimerCallback();
-    ros::spin();
+void AllegroNodeSim::doIt() {
+  // Main simulation spin loop at 100Hz.
+  ros::Rate rate(100.0);
+  while (ros::ok()) {
+    updateController();
+    rate.sleep();
+    ros::spinOnce();
   }
 }
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "allegro_hand_core_pd");
   AllegroNodeSim allegroNode;
-
-  bool polling = false;
-  if (argv[1] == std::string("true")) {
-    polling = true;
-  }
-  allegroNode.doIt(polling);
+  allegroNode.doIt();
 }
